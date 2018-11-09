@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+    <title>MARTA Simulation Group Project- Group A9 - 1</title>
+    <script src="scripts/stop.js"></script>
+    <script src="scripts/bus.js"></script>
+    <link rel="stylesheet" href="styles/modal.css">
+    <style>
+        tr.desc-row>td {
+            padding-bottom: 2em;
+            border-bottom: 1pt solid black;
+        }
+
+        td {
+            width: auto;
+            padding: 10px;
+        }
+
+        td.min {
+            width: 100px;
+            ;
+            white-space: nowrap;
+        }
+
+        td.filler {
+
+            border-bottom: 1pt solid red;
+            ;
+        }
+
+        #maintable {
+            border-color: #00f;
+            border-width: 1
+        }
+    </style>
+</head>
+
+<body>
+    <div style="width: 75%;float: left;">
+
+        <table style="width:auto" id="maintable">
+
+        </table>
+        <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="close">&times;</span>
+                        <h2>Modal Header</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>Some text in the Modal Body</p>
+                        <p>Some other text...</p>
+                    </div>
+                    <div class="modal-footer">
+                        <h3>Modal Footer</h3>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div style="float:right;">
+        <div style="background-color: lightpink; padding-left: 5px; margin-bottom: 10px">
+            <div>kSpeed - <span id="kcapacity">1</span></div>
+            <div>kCapacity - <span id="kcapacity">1</span></div>
+            <div>kWaiting - <span id="kcapacity">1</span></div>
+            <div>kBuses - <span id="kcapacity">1</span></div>
+            <div>kCombined - <span id="kcapacity">1</span></div>
+        </div>
+        <div style="background-color: lightgreen; padding-left: 5px">
+            <div>System Efficiency - <span id="efficiency">1</span></div>
+        </div>
+
+        <button id="myBtn">Open Modal</button>
+
+        
+
+    </div>
+
+</body>
+<script src="scripts/modal.js"></script>
+<script src="scripts/main.js"></script>
+
+</html>
