@@ -1,0 +1,69 @@
+add_depot,0,DEP/Repair Depot,0.2,0.28
+add_stop,1,SWP/SW Perimeter,0,0.03,0.04
+add_stop,2,MID/Midway,0,0.03,0.17
+add_stop,3,SEP/SE Perimeter,0,0.03,0.24
+add_stop,4,EAP/East Perimeter,0,0.08,0.24
+add_stop,5,NEP/NE Perimeter,0,0.13,0.24
+add_stop,6,SHP/Shopping Center,0,0.13,0.12
+add_stop,7,NWP/NW Perimeter,0,0.13,0.04
+add_stop,8,WTE/West End,0,0.08,0
+add_stop,9,STA/Sports Stadium,0,0.08,0.08
+add_stop,10,FPT/Four Points,0,0.08,0.16
+add_stop,11,ART/Arts Studio,0,0.11,0.31
+add_stop,12,LIB/Library,0,0.05,0.31
+add_stop,13,ZOO/Zoo,0,0.08,0.36
+add_stop,14,PRK/Parks and Rec,0,0.05,0.4
+add_stop,15,AIR/Airport,0,-0.04,0.16
+add_stop,16,NTE/North End,0,0.2,0.21
+add_stop,17,SPR/North Springs,0,0.23,0.21
+add_route,51,1,Perimeter
+add_route,53,3,Express
+add_route,55,5,Scenic
+add_route,57,7,Connector
+extend_route,51,1
+extend_route,51,7
+extend_route,51,6
+extend_route,51,5
+extend_route,51,4
+extend_route,51,3
+extend_route,51,2
+extend_route,53,9
+extend_route,53,10
+extend_route,53,4
+extend_route,53,11
+extend_route,53,4
+extend_route,53,10
+extend_route,55,8
+extend_route,55,9
+extend_route,55,10
+extend_route,55,4
+extend_route,55,12
+extend_route,55,13
+extend_route,55,14
+extend_route,55,13
+extend_route,55,12
+extend_route,55,4
+extend_route,55,10
+extend_route,55,9
+extend_route,57,15
+extend_route,57,2
+extend_route,57,10
+extend_route,57,16
+extend_route,57,17
+extend_route,57,16
+extend_route,57,10
+extend_route,57,2
+add_bus,60,51,0,0,15,10000,10000,20
+add_bus,61,51,3,0,15,10000,10000,40
+add_bus,62,53,0,0,10,10000,10000,60
+add_bus,63,55,0,0,15,10000,10000,20
+add_bus,64,55,4,0,15,10000,10000,40
+add_bus,65,57,0,0,15,10000,10000,20
+add_bus,66,57,4,0,15,10000,10000,40
+add_event,0,move_bus,60
+add_event,5,move_bus,61
+add_event,10,move_bus,62
+add_event,15,move_bus,63
+add_event,20,move_bus,64
+add_event,25,move_bus,65
+add_event,30,move_bus,66

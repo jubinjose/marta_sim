@@ -1,0 +1,18 @@
+add_depot,0,DEP/Repair Depot,0.2,0.28
+add_stop,1,SWP/SW Perimeter,0,0.03,0.04
+add_stop,2,MID/Midway,0,0.03,0.17
+add_stop,3,SEP/SE Perimeter,0,0.03,0.24
+add_stop,4,EAP/East Perimeter,0,0.08,0.24
+add_stop,5,NEP/NE Perimeter,0,0.13,0.24
+add_stop,6,SHP/Shopping Center,0,0.13,0.12
+add_stop,7,NWP/NW Perimeter,0,0.13,0.04
+add_route,51,1,Perimeter
+extend_route,51,1
+extend_route,51,7
+extend_route,51,6
+extend_route,51,5
+extend_route,51,4
+extend_route,51,3
+extend_route,51,2
+add_bus,61,51,3,0,15,10000,10000,40
+add_event,0,move_bus,61

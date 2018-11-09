@@ -1,0 +1,17 @@
+add_depot,0,DEP/Repair Depot,0.2,0.28
+add_stop,2,MID/Midway,0,0.03,0.17
+add_stop,10,FPT/Four Points,0,0.08,0.16
+add_stop,15,AIR/Airport,0,-0.04,0.16
+add_stop,16,NTE/North End,0,0.2,0.21
+add_stop,17,SPR/North Springs,0,0.23,0.21
+add_route,57,7,Connector
+extend_route,57,15
+extend_route,57,2
+extend_route,57,10
+extend_route,57,16
+extend_route,57,17
+extend_route,57,16
+extend_route,57,10
+extend_route,57,2
+add_bus,66,57,4,0,15,10000,10000,40
+add_event,0,move_bus,66

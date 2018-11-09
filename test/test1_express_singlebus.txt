@@ -1,0 +1,14 @@
+add_depot,0,DEP/Repair Depot,0.2,0.28
+add_stop,4,EAP/East Perimeter,0,0.08,0.24
+add_stop,9,STA/Sports Stadium,0,0.08,0.08
+add_stop,10,FPT/Four Points,0,0.08,0.16
+add_stop,11,ART/Arts Studio,0,0.11,0.31
+add_route,53,3,Express
+extend_route,53,9
+extend_route,53,10
+extend_route,53,4
+extend_route,53,11
+extend_route,53,4
+extend_route,53,10
+add_bus,62,53,0,0,10,10000,10000,60
+add_event,0,move_bus,62
