@@ -99,6 +99,24 @@ public class SimulationEngine{
         return 1 + ((int)dist) * 60 / speed;
     }
 
+    public double calcSystemEfficiency(){
+
+        double busCost = 0;
+
+        for (Bus bus : busMap.values()) {
+            busCost = busCost + sysSpeed * bus.getSpeed() + sysCapacity * bus.getCapacity();
+        }
+
+        int waiting = 0;
+
+        for (Stop stop : stopMap.values()) {
+            waiting += stop.getWaitingCount();
+        }
+
+        return sysWaiting * waiting + sysBuses * busCost + sysCombined * waiting * busCost;
+
+    }
+
     // Run upto the specified number of iterations and returns list of event outputs at each iteration
     // Don't write directly to console or return a string so that we keep the method as generic/flexible as possible
     // Let the caller handle what to do with the results
@@ -251,8 +269,8 @@ public class SimulationEngine{
     }
 
     public String toJson(){
-        String json = String.format("{\"kspeed\":%s,\"kcapacity\":%s,\"kwaiting\":%s,\"kbuses\":%s,\"kcombined\":%s,\"routes\":[",
-                            sysSpeed + "", sysCapacity + "", sysWaiting + "", sysBuses + "", sysCombined + "");
+        String json = String.format("{\"kspeed\":%s,\"kcapacity\":%s,\"kwaiting\":%s,\"kbuses\":%s,\"kcombined\":%s,\"efficiency\":%s,\"routes\":[",
+                            sysSpeed + "", sysCapacity + "", sysWaiting + "", sysBuses + "", sysCombined + "", calcSystemEfficiency());
                             
         
         String csv = "";
@@ -277,9 +295,10 @@ public class SimulationEngine{
 
         csv = "";
         for (Bus bus : busMap.values()) {
-            csv = csv + String.format("{\"id\":%d, \"currrent_stop_id\":%d, \"arrival_time\":%d, \"status\": \"%s\", \"rider_count\":%d, \"route\":%d, \"capacity\":%d, \"speed\":%d},", 
+            csv = csv + String.format(
+                "{\"id\":%d, \"currrent_stop_id\":%d, \"arrival_time\":%d, \"status\": \"%s\", \"rider_count\":%d,\"route\":%d, \"capacity\":%d, \"speed\":%d},", 
                             bus.getBusId(), bus.getCurrentStop().getStopId(), bus.getArrivaltime(), bus.toString(), bus.getRiderCount(), 
-                            bus.getRoute().getRouteId(),bus.getRiderCapacity(),bus.getSpeed());
+                            bus.getRoute().getRouteId(),bus.getCapacity(),bus.getSpeed());
         }
         csv = csv.replaceAll(",$", ""); // Remove trailing comma
 

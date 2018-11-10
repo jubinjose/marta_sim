@@ -50,10 +50,14 @@ $( document ).ready(function() {
 
         // Load all data passed from the simulation service to UI objects
         console.log(data);
+
         engine.kspeed = data.kspeed;
         engine.kcapacity = data.kcapacity;
         engine.kwaiting = data.kwaiting;
+        engine.kbuses = data.kbuses;
         engine.kcombined = data.kcombined;
+        engine.efficiency = data.efficiency;
+        
         engine.routes = data.routes;
 
         for (var j = 0; j < data.stops.length; j++) {
@@ -73,7 +77,14 @@ $( document ).ready(function() {
             current_stop.buslist.push(bus);
         }
         
-        
+        // Draw the UI
+
+        $("#kspeed").text(engine.kspeed);
+        $("#kcapacity").text(engine.kcapacity);
+        $("#kwaiting").text(engine.kwaiting);
+        $("#kcombined").text(engine.kcombined);
+        $("#efficiency").text(engine.efficiency);
+
         var table = document.getElementById("maintable");
         
         

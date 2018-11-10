@@ -22,41 +22,41 @@
         <table style="width:auto" id="maintable">
 
         </table>
-        <div id="myModal" class="modal">
+        <div id="update-sys" class="modal">
                 <!-- Modal content -->
                 <div class="modal-content">
                     <div class="modal-header">
                         <span class="close">&times;</span>
-                        <h2>Modal Header</h2>
+                        <h2>Update System Variables here</h2>
                     </div>
                     <div class="modal-body">
-                        <p>Some text in the Modal Body</p>
-                        <p>Some other text...</p>
+                        <p>text fields to update kwaiting, kspeed, kcombined, kbuses, kcapacity</p>
+                        <p>Also add validations</p>
                     </div>
-                    <div class="modal-footer">
+                    <!-- <div class="modal-footer">
                         <h3>Modal Footer</h3>
-                    </div>
+                    </div> -->
                 </div>
             </div>
     </div>
     <div style="float:right;">
         <div style="background-color: lightpink; padding-left: 5px; margin-bottom: 10px">
-            <div>kSpeed - <span id="kcapacity">1</span></div>
-            <div>kCapacity - <span id="kcapacity">1</span></div>
-            <div>kWaiting - <span id="kcapacity">1</span></div>
-            <div>kBuses - <span id="kcapacity">1</span></div>
-            <div>kCombined - <span id="kcapacity">1</span></div>
+            <div>kSpeed - <span id="kspeed"></span></div>
+            <div>kCapacity - <span id="kcapacity"></span></div>
+            <div>kWaiting - <span id="kwaiting"></span></div>
+            <div>kBuses - <span id="kbuses"></span></div>
+            <div>kCombined - <span id="kcombined"></span></div>
         </div>
-        <div style="background-color: lightgreen; padding-left: 5px">
-            <div>System Efficiency - <span id="efficiency">1</span></div>
+        <button id="btn-update-sys" style="margin-bottom:15px">Update System Parameters</button>
+        <div style="background-color: lightgreen; padding-left: 5px; margin-bottom:15px ">
+            <div>System Efficiency - <span id="efficiency"></span></div>
         </div>
-
-        <button id="myBtn">Open Modal</button>
+        <div><button id="btn-update-bus" style="margin-bottom:15px">Update Bus</button></div>
+        <div><button id="btn-move-bus" style="margin-bottom:15px">Move Bus</button></div>
 
     </div>
-
+    <script src="scripts/update-sys.js"></script>
+    <script src="scripts/main.js"></script>
 </body>
-<script src="scripts/modal.js"></script>
-<script src="scripts/main.js"></script>
 
 </html>

@@ -56,12 +56,12 @@ public class Bus{
         riderCount = val;
     }
 
-    private int riderCapacity;
-    public int getRiderCapacity(){
-        return riderCapacity;
+    private int capacity;
+    public int getCapacity(){
+        return capacity;
     }
-    public void setRiderCapacity(int val){
-        riderCapacity = val;
+    public void setCapacity(int val){
+        capacity = val;
     }
 
     private int speed;
@@ -82,7 +82,7 @@ public class Bus{
         this.route = route;
         this.currentStop = route.getStopAtindex(stopIndex);
         this.nextStopIndex = stopIndex;
-        this.riderCapacity = riderCapacity;
+        this.capacity = riderCapacity;
         this.speed = speed;
     }
 

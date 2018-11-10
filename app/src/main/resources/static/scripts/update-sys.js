@@ -1,8 +1,8 @@
 // Get the modal
-var modal = document.getElementById('myModal');
+var modal = document.getElementById('update-sys');
 
 // Get the button that opens the modal
-var btn = document.getElementById("myBtn");
+var btn = document.getElementById("btn-update-sys");
 
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
@@ -23,3 +23,5 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
 }
+
+modal.style.display = "none";
