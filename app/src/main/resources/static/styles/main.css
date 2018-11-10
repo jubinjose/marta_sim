@@ -1,0 +1,26 @@
+tr.desc-row>td {
+    padding-bottom: 2em;
+    border-bottom: 1pt solid black;
+}
+
+td {
+    width: auto;
+    padding: 10px;
+}
+
+td.min {
+    width: 100px;
+    ;
+    white-space: nowrap;
+}
+
+td.filler {
+
+    border-bottom: 1pt solid red;
+    ;
+}
+
+#maintable {
+    border-color: #00f;
+    border-width: 1
+}

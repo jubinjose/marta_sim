@@ -278,7 +278,7 @@ public class SimulationEngine{
         csv = "";
         for (Bus bus : busMap.values()) {
             csv = csv + String.format("{\"id\":%d, \"currrent_stop_id\":%d, \"arrival_time\":%d, \"status\": \"%s\", \"rider_count\":%d, \"route\":%d, \"capacity\":%d, \"speed\":%d},", 
-                            bus.getBusId(), bus.getArrivaltime(), bus.getCurrentStop().getStopId(), bus.toString(), bus.getRiderCount(), 
+                            bus.getBusId(), bus.getCurrentStop().getStopId(), bus.getArrivaltime(), bus.toString(), bus.getRiderCount(), 
                             bus.getRoute().getRouteId(),bus.getRiderCapacity(),bus.getSpeed());
         }
         csv = csv.replaceAll(",$", ""); // Remove trailing comma

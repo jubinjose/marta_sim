@@ -1,7 +1,5 @@
 import java.io.*;
-import java.util.*;
 import static spark.Spark.*;
-import spark.Route;
 
 public class SimulationService {
 
