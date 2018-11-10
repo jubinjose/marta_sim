@@ -276,7 +276,7 @@ public class SimulationEngine{
 
     private String createBusJson(Bus bus){
         return String.format(
-            "{\"id\":%d, \"currrent_stop_id\":%d, \"arrival_time\":%d, \"status\": \"%s\", \"rider_count\":%d,\"route\":%d, \"capacity\":%d, \"speed\":%d}",
+            "{\"id\":%d, \"current_stop_id\":%d, \"arrival_time\":%d, \"status\": \"%s\", \"rider_count\":%d,\"route\":%d, \"capacity\":%d, \"speed\":%d}",
             bus.getBusId(), bus.getCurrentStop().getStopId(), bus.getArrivaltime(), bus.toString(), bus.getRiderCount(), 
             bus.getRoute().getRouteId(),bus.getCapacity(),bus.getSpeed());
     }
@@ -328,10 +328,12 @@ public class SimulationEngine{
     public String moveBus(){
         List<String> resultList = runSimulation(1);
         if (!resultList.isEmpty()){
-            // Extract bus  id and stop id from a string like "b:67->s:16@0//p:0"
             String result = resultList.get(0);
+
+            // Extract bus  id and stop id from a string like "b:67->s:16@0//p:0"
             int busId = Integer.parseInt(result.split(":")[1].split("-")[0]);
             int stopId = Integer.parseInt(result.split(">")[1].split(":")[1].split("@")[0]);
+
             return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s}", 
                     createBusJson(getBus(busId)), createStopJson(getStop(stopId)), calcSystemEfficiency());
         }
