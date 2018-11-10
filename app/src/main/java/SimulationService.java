@@ -49,7 +49,11 @@ public class SimulationService {
         staticFiles.location("/static");
 
         get("/", (request, response) -> {
-            return SimulationEngine.getInstance().toJson();
+            return SimulationEngine.getInstance().getState();
+        });
+
+        get("/movebus", (request, response) -> {
+            return SimulationEngine.getInstance().moveBus();
         });
 
     }

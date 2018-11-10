@@ -8,5 +8,7 @@ class Engine {
         this.buslist = [];
         this.routelist = [];
         this.stoplist = [];
+
+        this.efficiency = 0;
     }
 }
