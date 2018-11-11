@@ -146,6 +146,14 @@ public class SimulationEngine{
 
             int arrivalTimeAtNextStop = e.getTime() + calcTravelTime(stopCurrentlyReached, stopHeadedTo, bus.getSpeed());
 
+            // Passenger math
+            int waitingAtStop = stopCurrentlyReached.getWaitingCount() + stopCurrentlyReached.getRidersArrive();
+            int gettingOffBus = Math.min(bus.getRiderCount(), stopCurrentlyReached.getRidersOff());
+            int boardingBus = Math.min(waitingAtStop, stopCurrentlyReached.getRidersOn());
+            bus.setRiderCount(bus.getRiderCount() - gettingOffBus + boardingBus);
+            int leavingStop = Math.min(waitingAtStop + gettingOffBus, stopCurrentlyReached.getRidersDepart());
+            stopCurrentlyReached.setWaitingCount(waitingAtStop + gettingOffBus - leavingStop);
+
             resultList.add(bus.toString());
 
             addEvent(new Event(arrivalTimeAtNextStop, EventType.MOVE_BUS, bus.getBusId()));

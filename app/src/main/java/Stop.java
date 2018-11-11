@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Stop{
 
     private int stopId;
@@ -109,6 +111,26 @@ public class Stop{
         name = aName;
         latitude = aLatitude;
         longitude = aLongitude;
+    }
+
+    private int generateRandomInteger(int lower, int upper){
+        return new Random().ints(lower, (upper + 1)).limit(1).findFirst().getAsInt();
+    }
+
+    public int getRidersArrive(){
+        return generateRandomInteger(ridersArriveLow, ridersArriveHigh);
+    }
+
+    public int getRidersOff(){
+        return generateRandomInteger(ridersOffLow, ridersOffHigh);
+    }
+
+    public int getRidersOn(){
+        return generateRandomInteger(ridersOnLow, ridersOnHigh);
+    }
+
+    public int getRidersDepart(){
+        return generateRandomInteger(ridersDepartLow, ridersDepartHigh);
     }
    
 }

@@ -1,6 +1,3 @@
-function get_stop_info(stop){
-    return "id: " + stop.id + "<br>name : " + stop.name + "<br>waiting : " + stop.waiting_count;
-}
 
 function load_initial_data(data){
 
@@ -38,6 +35,7 @@ function draw_initial_ui(){
     $("#kspeed").text(engine.kspeed);
     $("#kcapacity").text(engine.kcapacity);
     $("#kwaiting").text(engine.kwaiting);
+    $("#kbuses").text(engine.kbuses);
     $("#kcombined").text(engine.kcombined);
     $("#efficiency").text(engine.efficiency);
 
@@ -63,7 +61,7 @@ function draw_initial_ui(){
     
         cell = row.insertCell();
         cell.className = 'min';
-        cell.innerHTML = get_stop_info(stop);
+        cell.innerHTML = stop.get_display_info();
     
         add_buses_to_stop(stop.id, stop.buslist)
     
@@ -113,6 +111,8 @@ function move_bus(){
             // Find the stop bus reached
             let stop = engine.stoplist.find(s => s.id === data.stop.id);
 
+            stop.waiting_count = data.stop.waiting;
+
             stop.buslist.push(bus); // add bus to the stop it reached
             
             // Remove bus cell and bus description cell from previous stop row
@@ -123,6 +123,8 @@ function move_bus(){
 
             // Add bus to new stop row
             add_buses_to_stop(data.stop.id, [bus]);
+
+            $("#stop-" + data.stop.id + "-desc").find('td:first').html(stop.get_display_info());
 
             engine.efficiency = data.efficiency;
             $("#efficiency").text(engine.efficiency);
