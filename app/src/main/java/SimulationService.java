@@ -11,13 +11,13 @@ public class SimulationService {
             return;
         }
 
-        String scenarioFileStr = args[0].trim();
+        String setupFileStr = args[0].trim();
         String riderFileStr = args[1].trim();
 
-        File scenarioFile = new File(scenarioFileStr);
+        File setupFile = new File(setupFileStr);
 
-        if (!scenarioFile.exists() || !scenarioFile.isFile()) {
-            System.out.printf("Cannot find file '%s' ", scenarioFileStr);
+        if (!setupFile.exists() || !setupFile.isFile()) {
+            System.out.printf("Cannot find file '%s' ", setupFileStr);
             return;
         }
 
@@ -31,7 +31,7 @@ public class SimulationService {
         SimulationEngine engine = SimulationEngine.getInstance();
 
         try{
-            engine.init(scenarioFileStr, riderFileStr);
+            engine.initFromFile(setupFileStr, riderFileStr);
         }
         catch(IOException ioe){
             System.out.print("Unable to read from input files");
@@ -54,6 +54,11 @@ public class SimulationService {
 
         get("/movebus", (request, response) -> {
             return SimulationEngine.getInstance().moveBus();
+        });
+
+        get("/reset", (request, response) -> {
+            SimulationEngine.getInstance().init();
+            return SimulationEngine.getInstance().getState();
         });
 
     }

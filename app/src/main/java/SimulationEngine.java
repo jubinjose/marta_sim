@@ -10,6 +10,9 @@ public class SimulationEngine{
     private HashMap<Integer,BusRoute> routeMap = new HashMap<Integer,BusRoute>();
     private EventQueue eventQueue = new EventQueue();
 
+    List<String> initialSetupData; // Will store all lines from input setup file
+    List<String> initialRiderData; // will store all lines from input reader file
+
     // using singleton here so the web request gets hold of this instance
     private SimulationEngine(){};
 
@@ -149,6 +152,7 @@ public class SimulationEngine{
 
             bus.setCurrentStop(stopCurrentlyReached);
             bus.setNextStopIndex(stopHeadedToIndex);
+            bus.setArrivaltime(arrivalTimeAtNextStop);
 
             iterationCount++;
         }
@@ -157,7 +161,15 @@ public class SimulationEngine{
     }
 
     // Initialize the simulation from input files
-    public void init(String scenarioFile, String riderFile) throws IOException, Exception{
+    public void initFromFile(String setupFile, String riderFile) throws IOException, Exception{
+        this.initialSetupData = Files.readAllLines(Paths.get(setupFile));
+        this.initialRiderData = Files.readAllLines(Paths.get(riderFile));
+        init();
+    }
+
+    // Initialize the simulation from list of strings
+    // Refactored this as a seperate method to support reset of system to very beginning
+    public void init() throws IOException, Exception{
 
         // Clear all state since we might be reusing the same instance after it completed its run
         busMap = new HashMap<Integer,Bus>();
@@ -166,10 +178,7 @@ public class SimulationEngine{
 
         eventQueue = new EventQueue();
 
-        Path path = Paths.get(scenarioFile);
-        List<String> fileContents = Files.readAllLines(path);
-
-        for (String line : fileContents) {
+        for (String line : this.initialSetupData) {
 
             if (line.trim().length() == 0) continue;
 
@@ -241,10 +250,7 @@ public class SimulationEngine{
             }
         }
 
-        path = Paths.get(riderFile);
-        fileContents = Files.readAllLines(path);
-
-        for (String line : fileContents) {
+        for (String line : this.initialRiderData) {
 
             if (line.trim().length() == 0) continue;
 

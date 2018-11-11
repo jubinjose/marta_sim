@@ -1,4 +1,10 @@
+function get_stop_info(stop){
+    return "id: " + stop.id + "<br>name : " + stop.name + "<br>waiting : " + stop.waiting_count;
+}
+
 function load_initial_data(data){
+
+    engine = new Engine();
 
     engine.kspeed = data.kspeed;
     engine.kcapacity = data.kcapacity;
@@ -27,7 +33,7 @@ function load_initial_data(data){
     }
 }
 
-function draw_system_ui(){
+function draw_initial_ui(){
     
     $("#kspeed").text(engine.kspeed);
     $("#kcapacity").text(engine.kcapacity);
@@ -35,7 +41,8 @@ function draw_system_ui(){
     $("#kcombined").text(engine.kcombined);
     $("#efficiency").text(engine.efficiency);
 
-    var table = document.getElementById("maintable");
+    var table = document.getElementById("main-table");
+    table.innerHTML = ""; // Clear any rows if present - need this when calling from Reset
     
     
     for (var j = 0; j < engine.stoplist.length; j++) {
@@ -43,7 +50,7 @@ function draw_system_ui(){
         var stop = engine.stoplist[j];
     
         var row = table.insertRow();
-        row.id = "stop" + stop.id;
+        row.id = "stop-" + stop.id;
         row.stop = stop;
     
         var cell = row.insertCell();
@@ -51,12 +58,12 @@ function draw_system_ui(){
         cell.innerHTML="<img src='images/stop-48.png' alt='stop'/>";
     
         row = table.insertRow();
-        row.id = "stop" + stop.id + "-desc";
+        row.id = "stop-" + stop.id + "-desc";
         row.className = "desc-row"; // To leave space before next row
     
         cell = row.insertCell();
         cell.className = 'min';
-        cell.innerHTML = "id: " + stop.id + "<br>name : " + stop.name + "<br>waiting : " + stop.waiting_count;
+        cell.innerHTML = get_stop_info(stop);
     
         add_buses_to_stop(stop.id, stop.buslist)
     
@@ -65,24 +72,21 @@ function draw_system_ui(){
 
 function add_buses_to_stop(stop_id, buslist){ 
 
-    let row = document.getElementById('stop' + stop_id);
+    let stop_row = document.getElementById('stop-' + stop_id);
+    let stop_desc_row = document.getElementById('stop-' + stop_id + '-desc');
 
     for (var i = 0; i < buslist.length; i++) {
         let bus = buslist[i];
-        cell = row.insertCell();
-        cell.id = "bus" + bus.id;
-        cell.className = 'min';
-        cell.innerHTML = "<img src='images/bus-48.png' alt='bus'/>";
-    }
-    
-    row = document.getElementById('stop' + stop_id + '-desc');
 
-    for (var i = 0; i < buslist.length; i++) {
-        let bus = buslist[i];
-        cell = row.insertCell();
-        cell.id = "bus" + bus.id + '-desc';
-        cell.className = 'min';
-        cell.innerHTML = bus.status;
+        let bus_cell = stop_row.insertCell();
+        bus_cell.id = "bus-" + bus.id;
+        bus_cell.className = 'min';
+        bus_cell.innerHTML = "<img src='images/bus-48.png' alt='bus'/>";
+
+        bus_desc_cell = stop_desc_row.insertCell();
+        bus_desc_cell.id = "bus-" + bus.id + '-desc';
+        bus_desc_cell.className = 'min';
+        bus_desc_cell.innerHTML = bus.status;
     }
 }
 
@@ -91,24 +95,34 @@ function move_bus(){
     $.get( "/movebus", function( data ) {
         if (data.move === true){
             
+            // find bus that moved
             let bus = engine.buslist.find(b => b.id === data.bus.id);
 
             let prev_stop = engine.stoplist.find(s => s.id === bus.current_stop_id);
+
+            // remove bus from current stop object's buslist
             let prev_stop_bus_index = prev_stop.buslist.findIndex(b => b.id === bus.id);
+            prev_stop.buslist.splice(prev_stop_bus_index, 1); 
 
-            prev_stop.buslist.splice(prev_stop_bus_index, 1); // remove bus from current stop object
+            // Update bus object with post move bus data from server
+            bus.arrival_time = data.bus.arrival_time;
+            bus.rider_count = data.bus.rider_count;
+            bus.status = data.bus.status;
+            bus.current_stop_id = data.bus.current_stop_id;
 
-            bus.current_stop_id = data.stop.id;
+            // Find the stop bus reached
             let stop = engine.stoplist.find(s => s.id === data.stop.id);
 
-            stop.buslist.push(bus); // add bus to new stop object
+            stop.buslist.push(bus); // add bus to the stop it reached
             
-            let node = document.getElementById('bus' + bus.id);
+            // Remove bus cell and bus description cell from previous stop row
+            let node = document.getElementById('bus-' + bus.id);
             node.parentNode.removeChild(node);
-            node = document.getElementById('bus' + bus.id + '-desc');
+            node = document.getElementById('bus-' + bus.id + '-desc');
             node.parentNode.removeChild(node);
 
-            add_buses_to_stop(stop_id, [bus]);
+            // Add bus to new stop row
+            add_buses_to_stop(data.stop.id, [bus]);
 
             engine.efficiency = data.efficiency;
             $("#efficiency").text(engine.efficiency);
@@ -116,7 +130,7 @@ function move_bus(){
     }, "json" );
 }
 
-var engine = new Engine();
+var engine;
 
 $( document ).ready(function() {
     $.get( "/", function( data ) {
@@ -127,11 +141,19 @@ $( document ).ready(function() {
         load_initial_data(data);
         
         // Draw the UI
-        draw_system_ui();
+        draw_initial_ui();
 
         // Hookup move bus event handler
         $( "#btn-move-bus").click(function() {
             move_bus();
+        });
+
+        // Hookup reset bus event handler
+        $( "#btn-reset-bus").click(function() {
+            $.get( "/reset", function( data ) {
+                load_initial_data(data);
+                draw_initial_ui();
+            }, "json");
         });
         
     }, "json" );
