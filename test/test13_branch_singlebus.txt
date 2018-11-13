@@ -1,0 +1,18 @@
+add_stop,1,SWP/SW Perimeter,0,0.03,0.04
+add_stop,4,EAP/East Perimeter,0,0.08,0.24
+add_stop,6,SHP/Shopping Center,0,0.13,0.12
+add_stop,8,WTE/West End,0,0.08,0
+add_stop,9,STA/Sports Stadium,0,0.08,0.08
+add_stop,10,FPT/Four Points,0,0.08,0.16
+add_route,31,1,Branch
+extend_route,31,8
+extend_route,31,9
+extend_route,31,6
+extend_route,31,9
+extend_route,31,10
+extend_route,31,4
+extend_route,31,10
+extend_route,31,9
+extend_route,31,1
+add_bus,10,31,0,15,40
+add_event,0,move_bus,10

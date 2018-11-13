@@ -1,4 +1,3 @@
-add_depot,0,DEP/Repair Depot,0.2,0.28
 add_stop,1,SWP/SW Perimeter,0,0.03,0.04
 add_stop,2,MID/Midway,0,0.03,0.17
 add_stop,3,SEP/SE Perimeter,0,0.03,0.24
@@ -53,13 +52,13 @@ extend_route,57,17
 extend_route,57,16
 extend_route,57,10
 extend_route,57,2
-add_bus,60,51,0,0,15,10000,10000,20
-add_bus,61,51,3,0,15,10000,10000,40
-add_bus,62,53,0,0,10,10000,10000,60
-add_bus,63,55,0,0,15,10000,10000,20
-add_bus,64,55,4,0,15,10000,10000,40
-add_bus,65,57,0,0,15,10000,10000,20
-add_bus,66,57,4,0,15,10000,10000,40
+add_bus,60,51,0,15,20
+add_bus,61,51,3,15,40
+add_bus,62,53,0,10,60
+add_bus,63,55,0,15,20
+add_bus,64,55,4,15,40
+add_bus,65,57,0,15,20
+add_bus,66,57,4,15,40
 add_event,0,move_bus,60
 add_event,5,move_bus,61
 add_event,10,move_bus,62

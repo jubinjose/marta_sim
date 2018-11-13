@@ -1,0 +1,51 @@
+add_stop,1,SWP/SW Perimeter,0,0.03,0.04
+add_stop,3,SEP/SE Perimeter,0,0.03,0.24
+add_stop,4,EAP/East Perimeter,0,0.08,0.24
+add_stop,5,NEP/NE Perimeter,0,0.13,0.24
+add_stop,6,SHP/Shopping Center,0,0.13,0.12
+add_stop,8,WTE/West End,0,0.08,0
+add_stop,9,STA/Sports Stadium,0,0.08,0.08
+add_stop,10,FPT/Four Points,0,0.08,0.16
+add_stop,16,NTE/North End,0,0.2,0.21
+add_route,31,1,Branch
+add_route,32,2,Tour
+add_route,33,3,ZigZag
+extend_route,31,8
+extend_route,31,9
+extend_route,31,6
+extend_route,31,9
+extend_route,31,10
+extend_route,31,4
+extend_route,31,10
+extend_route,31,9
+extend_route,31,1
+extend_route,32,9
+extend_route,32,1
+extend_route,32,8
+extend_route,32,9
+extend_route,32,1
+extend_route,32,8
+extend_route,32,9
+extend_route,32,10
+extend_route,33,3
+extend_route,33,4
+extend_route,33,5
+extend_route,33,4
+extend_route,33,5
+extend_route,33,16
+extend_route,33,5
+extend_route,33,16
+extend_route,33,5
+extend_route,33,4
+add_bus,10,31,0,15,40
+add_bus,13,32,0,15,40
+add_bus,20,31,4,15,30
+add_bus,23,32,4,15,30
+add_bus,16,33,0,15,40
+add_bus,26,33,4,15,30
+add_event,0,move_bus,16
+add_event,15,move_bus,26
+add_event,0,move_bus,10
+add_event,15,move_bus,13
+add_event,0,move_bus,20
+add_event,15,move_bus,23

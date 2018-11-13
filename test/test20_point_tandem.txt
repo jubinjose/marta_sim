@@ -1,0 +1,12 @@
+add_stop,5,NEP/NE Perimeter,0,0.13,0.24
+add_stop,16,NTE/North End,0,0.2,0.21
+add_stop,17,SPR/North Springs,0,0.23,0.21
+add_route,34,1,Point
+add_route,35,3,Tandem
+extend_route,34,5
+extend_route,35,16
+extend_route,35,17
+add_bus,14,34,0,15,20
+add_bus,15,35,0,15,60
+add_event,0,move_bus,14
+add_event,0,move_bus,15
