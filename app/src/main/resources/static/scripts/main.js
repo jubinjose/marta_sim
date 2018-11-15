@@ -132,6 +132,51 @@ function move_bus(){
     }, "json" );
 }
 
+function replay(){
+
+    $.get( "/replay", function( data ) {
+        alert("replay");
+        if (data.move === true){
+            
+            // find bus that moved
+            let bus = engine.buslist.find(b => b.id === data.bus.id);
+
+            let prev_stop = engine.stoplist.find(s => s.id === bus.current_stop_id);
+
+            // remove bus from current stop object's buslist
+            let prev_stop_bus_index = prev_stop.buslist.findIndex(b => b.id === bus.id);
+            prev_stop.buslist.splice(prev_stop_bus_index, 1); 
+
+            // Update bus object with post move bus data from server
+            bus.arrival_time = data.bus.arrival_time;
+            bus.rider_count = data.bus.rider_count;
+            bus.status = data.bus.status;
+            bus.current_stop_id = data.bus.current_stop_id;
+
+            // Find the stop bus reached
+            let stop = engine.stoplist.find(s => s.id === data.stop.id);
+
+            stop.waiting_count = data.stop.waiting;
+
+            stop.buslist.push(bus); // add bus to the stop it reached
+            
+            // Remove bus cell and bus description cell from previous stop row
+            let node = document.getElementById('bus-' + bus.id);
+            node.parentNode.removeChild(node);
+            node = document.getElementById('bus-' + bus.id + '-desc');
+            node.parentNode.removeChild(node);
+
+            // Add bus to new stop row
+            add_buses_to_stop(data.stop.id, [bus]);
+
+            $("#stop-" + data.stop.id + "-desc").find('td:first').html(stop.get_display_info());
+
+            engine.efficiency = data.efficiency;
+            $("#efficiency").text(engine.efficiency);
+        }
+    }, "json" );
+}
+
 var engine;
 
 $( document ).ready(function() {
@@ -156,6 +201,11 @@ $( document ).ready(function() {
                 load_initial_data(data);
                 draw_initial_ui();
             }, "json");
+        });
+
+         // Hookup replay bus event handler
+         $( "#btn-replay").click(function() {
+            replay();
         });
         
     }, "json" );

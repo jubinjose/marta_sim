@@ -9,6 +9,8 @@ public class SimulationEngine{
     private HashMap<Integer,Stop> stopMap = new HashMap<Integer,Stop>();
     private HashMap<Integer,BusRoute> routeMap = new HashMap<Integer,BusRoute>();
     private EventQueue eventQueue = new EventQueue();
+    private Deque<Integer> eventReplay = new ArrayDeque<>();
+    private HashMap<Integer,String> eventStatesMap = new HashMap<Integer,String>();
 
     List<String> initialSetupData; // Will store all lines from input setup file
     List<String> initialRiderData; // will store all lines from input reader file
@@ -63,7 +65,6 @@ public class SimulationEngine{
         sysCombined = val;
     }
 
-
     /* Methods */
     public void addBus(Bus bus){
         busMap.put(bus.getBusId(), bus);
@@ -81,6 +82,22 @@ public class SimulationEngine{
         eventQueue.addEvent(event);
     }
 
+    public void addEventReplay(int eventStateId){
+        if(eventReplay.size() == 3){
+            System.out.println("We only go back 3 events, removing event before adding more.");
+            Integer e = eventReplay.removeLast();
+            System.out.println("Removed: " + e);
+        }
+
+        eventReplay.push(eventStateId);
+        System.out.println("Added event: " + eventStateId );
+        System.out.println(eventReplay);
+    }
+
+    public void addEventState(int eventStateId, String eventStateSting){
+        eventStatesMap.put(eventStateId, eventStateSting);
+    }
+
     public Bus getBus(int busId){
         return busMap.get(busId);
     }
@@ -91,6 +108,14 @@ public class SimulationEngine{
 
     public BusRoute getRoute(int routeid){
         return routeMap.get(routeid);
+    }
+
+    public int getEventReplay(){
+        return eventReplay.pollLast();
+    }
+
+    public String getEventState(int eventStateId){
+        return eventStatesMap.get(eventStateId);
     }
 
     public double calcDistance(Stop stop1, Stop stop2){
@@ -344,6 +369,29 @@ public class SimulationEngine{
         if (!resultList.isEmpty()){
             String result = resultList.get(0);
 
+            // add to replayEvent and eventStatesMap for replay capabilities  
+            System.out.println(result);
+            Integer eventStateId = this.eventReplay.peekLast() + 1;
+            this.addEventReplay(eventStateId);
+            this.addEventState(eventStateId, result);
+
+            // Extract bus  id and stop id from a string like "b:67->s:16@0//p:0"
+            int busId = Integer.parseInt(result.split(":")[1].split("-")[0]);
+            int stopId = Integer.parseInt(result.split(">")[1].split(":")[1].split("@")[0]);
+
+            return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s}", 
+                    createBusJson(getBus(busId)), createStopJson(getStop(stopId)), calcSystemEfficiency());
+        }
+        else{
+            return "{\"move\":false}";
+        }
+    }
+
+    public String replay(){
+        int eventStateId = this.getEventReplay();
+        String result = this.getEventState(eventStateId);
+
+        if (result != null){
             // Extract bus  id and stop id from a string like "b:67->s:16@0//p:0"
             int busId = Integer.parseInt(result.split(":")[1].split("-")[0]);
             int stopId = Integer.parseInt(result.split(">")[1].split(":")[1].split("@")[0]);

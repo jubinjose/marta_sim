@@ -56,6 +56,10 @@ public class SimulationService {
             return SimulationEngine.getInstance().moveBus();
         });
 
+        get("/replay", (request, response) -> {
+            return SimulationEngine.getInstance().replay();
+        });
+
         get("/reset", (request, response) -> {
             SimulationEngine.getInstance().init();
             return SimulationEngine.getInstance().getState();
