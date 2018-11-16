@@ -174,7 +174,7 @@ public class SimulationEngine{
             this.addEventReplay(systemStateId);
             SystemState systemState = new SystemState(bus.getBusId(), bus.getArrivaltime(), 
                                         bus.getCapacity(), bus.getCurrentStop(), bus.getNextStopIndex(),
-                                        bus.getRiderCount(), bus.getRoute(), bus.getSpeed());
+                                        bus.getRiderCount(), bus.getRoute(), bus.getSpeed(), bus.getCurrentStop().getWaitingCount());
             this.addSystemState(systemStateId, systemState);
 
     
@@ -409,13 +409,18 @@ public class SimulationEngine{
            
             // resetting the Bus properties 
             Bus bus = this.getBus(busId);
-            bus.setRiderCount(systemState.getRiderCount());
+            bus.setArrivaltime(systemState.getBusArrivaltime());
             bus.setCapacity(systemState.getBusCapacity());
+            bus.setCurrentStop(systemState.getBusCurrentStop());
+            bus.setNextStopIndex(systemState.getBusNextStopIndex());
+            bus.setRiderCount(systemState.getRiderCount());
             bus.setRoute(systemState.getBusRoute());
             bus.setSpeed(systemState.getBusSpeed());
-            bus.setNextStopIndex(systemState.getBusNextStopIndex());
-            bus.setArrivaltime(systemState.getBusArrivaltime());
-        
+
+            // reset waiting count 
+            Stop stop = this.getStop(systemState.getBusCurrentStop().getStopId());
+            stop.setWaitingCount(systemState.getWaiting());
+           
             if(this.eventReplay.size() > 0){
                 return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s, \"replay\":true}", 
                     createBusJson(getBus(busId)), createStopJson(getStop(stopId)), calcSystemEfficiency());

@@ -64,9 +64,17 @@ public class SystemState{
         busSpeed = val;
     }
 
+    private int waiting;
+    public int getWaiting(){
+        return waiting;
+    }
+    public void setWaiting(int val){
+        waiting = val;
+    }
+    
     public SystemState(int busId, int busArrivalTime, int busCapacity, 
                     Stop busCurrentStop, int busNextStopIndex, int busRiderCount,
-                    BusRoute busRoute, int busSpeed) {
+                    BusRoute busRoute, int busSpeed, int waiting) {
 
         this.busId = busId;
         this.busArrivalTime = busArrivalTime;
@@ -76,6 +84,7 @@ public class SystemState{
         this.busRiderCount = busRiderCount;   
         this.busRoute = busRoute;
         this.busSpeed = busSpeed; 
+        this.waiting = waiting; 
     }
 
     public String toString(){
