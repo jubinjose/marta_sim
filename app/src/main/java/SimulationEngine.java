@@ -111,7 +111,7 @@ public class SimulationEngine{
     }
 
     public int getEventReplay(){
-        return eventReplay.pollLast();
+        return eventReplay.pollFirst();
     }
 
     public String getEventState(int eventStateId){
@@ -371,7 +371,13 @@ public class SimulationEngine{
 
             // add to replayEvent and eventStatesMap for replay capabilities  
             System.out.println(result);
-            Integer eventStateId = this.eventReplay.peekLast() + 1;
+            Integer eventStateId = 0;
+            if(eventReplay != null && eventReplay.size() > 0) {
+                eventStateId = this.eventReplay.peekFirst() + 1;
+            }
+            else {
+                eventStateId = 1;
+            }
             this.addEventReplay(eventStateId);
             this.addEventState(eventStateId, result);
 
@@ -379,7 +385,7 @@ public class SimulationEngine{
             int busId = Integer.parseInt(result.split(":")[1].split("-")[0]);
             int stopId = Integer.parseInt(result.split(">")[1].split(":")[1].split("@")[0]);
 
-            return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s}", 
+            return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s, \"replay\":true}", 
                     createBusJson(getBus(busId)), createStopJson(getStop(stopId)), calcSystemEfficiency());
         }
         else{
@@ -389,18 +395,25 @@ public class SimulationEngine{
 
     public String replay(){
         int eventStateId = this.getEventReplay();
-        String result = this.getEventState(eventStateId);
-
+        String result = null;
+        if(eventStateId != 0) {
+            result = this.getEventState(eventStateId);
+        }
         if (result != null){
             // Extract bus  id and stop id from a string like "b:67->s:16@0//p:0"
             int busId = Integer.parseInt(result.split(":")[1].split("-")[0]);
             int stopId = Integer.parseInt(result.split(">")[1].split(":")[1].split("@")[0]);
-
-            return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s}", 
+           
+            if(this.eventReplay.size() > 0){
+                return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s, \"replay\":true}", 
                     createBusJson(getBus(busId)), createStopJson(getStop(stopId)), calcSystemEfficiency());
+            } else {
+                return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s, \"replay\":false}", 
+                    createBusJson(getBus(busId)), createStopJson(getStop(stopId)), calcSystemEfficiency());
+            }
         }
         else{
-            return "{\"move\":false}";
+            return "{\"move\":false, \"replay\":false}";
         }
     }
 }

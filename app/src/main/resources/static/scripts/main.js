@@ -38,7 +38,8 @@ function draw_initial_ui(){
     $("#kbuses").text(engine.kbuses);
     $("#kcombined").text(engine.kcombined);
     $("#efficiency").text(engine.efficiency);
-
+    $("#btn-replay").prop("disabled",true);
+    
     var table = document.getElementById("main-table");
     table.innerHTML = ""; // Clear any rows if present - need this when calling from Reset
     
@@ -128,6 +129,12 @@ function move_bus(){
 
             engine.efficiency = data.efficiency;
             $("#efficiency").text(engine.efficiency);
+            
+        }
+        if(data.replay === true){
+            $("#btn-replay").prop("disabled",false);
+        } else {
+            $("#btn-replay").prop("disabled",true);
         }
     }, "json" );
 }
@@ -135,7 +142,7 @@ function move_bus(){
 function replay(){
 
     $.get( "/replay", function( data ) {
-        alert("replay");
+
         if (data.move === true){
             
             // find bus that moved
@@ -173,6 +180,12 @@ function replay(){
 
             engine.efficiency = data.efficiency;
             $("#efficiency").text(engine.efficiency);
+        }
+
+        if(data.replay === true){
+            $("#btn-replay").prop("disabled",false);
+        } else {
+            $("#btn-replay").prop("disabled",true);
         }
     }, "json" );
 }
