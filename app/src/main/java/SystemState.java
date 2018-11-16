@@ -7,28 +7,13 @@ public class SystemState{
     public void setBusId(int val){
         busId = val;
     }
-    private int busRiderCount;
-    public int getRiderCount(){
-        return busRiderCount;
-    }
-    public void setRiderCount(int val){
-        busRiderCount = val;
-    }
 
-    private Stop busAtStop;
-    public Stop getBusAtStop(){
-        return busAtStop;
+    private int busArrivalTime;
+    public int getBusArrivaltime(){
+        return busArrivalTime;
     }
-    public void setBusAtStop(Stop val){
-        busAtStop = val;
-    }
-
-    private int  riderWaitingCount;
-    public int getRiderWaitingCount(){
-        return riderWaitingCount;
-    }
-    public void setRiderWaitingCount(int val){
-        riderWaitingCount = val;
+    public void setBusArrivaltime(int val){
+        busArrivalTime = val;
     }
 
     private int busCapacity;
@@ -39,12 +24,28 @@ public class SystemState{
         busCapacity = val;
     }
 
-    private int busSpeed;
-    public int getBusSpeed(){
-        return busSpeed;
+    private Stop busCurrentStop;
+    public Stop getBusCurrentStop(){
+        return busCurrentStop;
     }
-    public void setBusSpeed(int val){
-        busSpeed = val;
+    public void setBusCurrentStop(Stop val){
+        busCurrentStop = val;
+    }
+
+    private int busNextStopIndex;
+    public int getBusNextStopIndex(){
+        return busNextStopIndex;
+    }
+    public void setBusNextStopIndex(int val){
+        busNextStopIndex = val;
+    }
+
+    private int busRiderCount;
+    public int getRiderCount(){
+        return busRiderCount;
+    }
+    public void setRiderCount(int val){
+        busRiderCount = val;
     }
 
     private BusRoute busRoute;
@@ -54,36 +55,27 @@ public class SystemState{
     public void setBusRoute(BusRoute val){
         busRoute = val;
     }
-    
-    private int busNextStopIndex;
-    public int getBusNextStopIndex(){
-        return busNextStopIndex;
+
+    private int busSpeed;
+    public int getBusSpeed(){
+        return busSpeed;
     }
-    public void setBusNextStopIndex(int val){
-        busNextStopIndex = val;
+    public void setBusSpeed(int val){
+        busSpeed = val;
     }
 
-    private int busArrivalTime;
-    public int getBusArrivaltime(){
-        return busArrivalTime;
-    }
-    public void setBusArrivaltime(int val){
-        busArrivalTime = val;
-    }
-
-    
-    public SystemState(int busId, int busRiderCount, Stop busAtStop, int riderWaitingCount, int busCapacity, BusRoute busRoute, 
-    int busSpeed, int busNextStopIndex, int busArrivalTime) {
+    public SystemState(int busId, int busArrivalTime, int busCapacity, 
+                    Stop busCurrentStop, int busNextStopIndex, int busRiderCount,
+                    BusRoute busRoute, int busSpeed) {
 
         this.busId = busId;
-        this.busRiderCount = busRiderCount;
-        this.busAtStop = busAtStop;
-        this.riderWaitingCount = riderWaitingCount;
-        this.busCapacity = busCapacity;
-        this.busRoute = busRoute;
-        this.busSpeed = busSpeed;
-        this.busNextStopIndex = busNextStopIndex;
         this.busArrivalTime = busArrivalTime;
+        this.busCapacity = busCapacity;
+        this.busCurrentStop = busCurrentStop;
+        this.busNextStopIndex = busNextStopIndex;
+        this.busRiderCount = busRiderCount;   
+        this.busRoute = busRoute;
+        this.busSpeed = busSpeed; 
     }
 
     public String toString(){

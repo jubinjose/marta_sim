@@ -163,24 +163,6 @@ public class SimulationEngine{
             Bus bus = getBus(e.getObjectid());
             BusRoute route = bus.getRoute();
 
-            int stopCurrentlyReachedIndex = bus.getNextStopIndex();
-            Stop stopCurrentlyReached = route.getStopAtindex(stopCurrentlyReachedIndex);
-
-            int stopHeadedToIndex = bus.getRoute().getNextStopIndex(stopCurrentlyReachedIndex);
-            Stop stopHeadedTo = route.getStopAtindex(stopHeadedToIndex);
-
-            int arrivalTimeAtNextStop = e.getTime() + calcTravelTime(stopCurrentlyReached, stopHeadedTo, bus.getSpeed());
-
-            int busPrevRiderCount = bus.getRiderCount();
-
-            // Passenger math
-            int waitingAtStop = stopCurrentlyReached.getWaitingCount() + stopCurrentlyReached.getRidersArrive();
-            int gettingOffBus = Math.min(bus.getRiderCount(), stopCurrentlyReached.getRidersOff());
-            int boardingBus = Math.min(waitingAtStop, stopCurrentlyReached.getRidersOn());
-            bus.setRiderCount(bus.getRiderCount() - gettingOffBus + boardingBus);
-            int leavingStop = Math.min(waitingAtStop + gettingOffBus, stopCurrentlyReached.getRidersDepart());
-            stopCurrentlyReached.setWaitingCount(waitingAtStop + gettingOffBus - leavingStop);
-
             // add to replayEvent and eventStatesMap for replay capabilities  
             Integer systemStateId = 0;
             if(eventReplay != null && eventReplay.size() > 0) {
@@ -190,8 +172,27 @@ public class SimulationEngine{
                 systemStateId = 1;
             }
             this.addEventReplay(systemStateId);
-            SystemState systemState = new SystemState(bus.getBusId(), busPrevRiderCount, bus.getCurrentStop(), waitingAtStop, bus.getCapacity(), bus.getRoute(), bus.getSpeed(), bus.getNextStopIndex(), bus.getArrivaltime());
+            SystemState systemState = new SystemState(bus.getBusId(), bus.getArrivaltime(), 
+                                        bus.getCapacity(), bus.getCurrentStop(), bus.getNextStopIndex(),
+                                        bus.getRiderCount(), bus.getRoute(), bus.getSpeed());
             this.addSystemState(systemStateId, systemState);
+
+    
+            int stopCurrentlyReachedIndex = bus.getNextStopIndex();
+            Stop stopCurrentlyReached = route.getStopAtindex(stopCurrentlyReachedIndex);
+
+            int stopHeadedToIndex = bus.getRoute().getNextStopIndex(stopCurrentlyReachedIndex);
+            Stop stopHeadedTo = route.getStopAtindex(stopHeadedToIndex);
+
+            int arrivalTimeAtNextStop = e.getTime() + calcTravelTime(stopCurrentlyReached, stopHeadedTo, bus.getSpeed());
+
+            // Passenger math
+            int waitingAtStop = stopCurrentlyReached.getWaitingCount() + stopCurrentlyReached.getRidersArrive();
+            int gettingOffBus = Math.min(bus.getRiderCount(), stopCurrentlyReached.getRidersOff());
+            int boardingBus = Math.min(waitingAtStop, stopCurrentlyReached.getRidersOn());
+            bus.setRiderCount(bus.getRiderCount() - gettingOffBus + boardingBus);
+            int leavingStop = Math.min(waitingAtStop + gettingOffBus, stopCurrentlyReached.getRidersDepart());
+            stopCurrentlyReached.setWaitingCount(waitingAtStop + gettingOffBus - leavingStop);
 
             resultList.add(bus.toString());
 
@@ -404,22 +405,17 @@ public class SimulationEngine{
         if (systemState != null){
             // Extract bus  id and stop id from System State 
             int busId = systemState.getBusId();
-            int stopId = systemState.getBusNextStopIndex();
+            int stopId = systemState.getBusCurrentStop().getStopId();
            
             // resetting the Bus properties 
             Bus bus = this.getBus(busId);
             bus.setRiderCount(systemState.getRiderCount());
-            bus.setCurrentStop(systemState.getBusAtStop());
             bus.setCapacity(systemState.getBusCapacity());
             bus.setRoute(systemState.getBusRoute());
             bus.setSpeed(systemState.getBusSpeed());
             bus.setNextStopIndex(systemState.getBusNextStopIndex());
             bus.setArrivaltime(systemState.getBusArrivaltime());
-
-            Stop stop = this.getStop(stopId);
-            stop.setWaitingCount(systemState.getRiderWaitingCount());
         
-
             if(this.eventReplay.size() > 0){
                 return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s, \"replay\":true}", 
                     createBusJson(getBus(busId)), createStopJson(getStop(stopId)), calcSystemEfficiency());
