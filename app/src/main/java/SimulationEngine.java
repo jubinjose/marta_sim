@@ -9,8 +9,7 @@ public class SimulationEngine{
     private HashMap<Integer,Stop> stopMap = new HashMap<Integer,Stop>();
     private HashMap<Integer,BusRoute> routeMap = new HashMap<Integer,BusRoute>();
     private EventQueue eventQueue = new EventQueue();
-    private Deque<Integer> eventReplay = new ArrayDeque<>();
-    private HashMap<Integer,SystemState> systemStatesMap = new HashMap<Integer,SystemState>();
+    private Deque<SystemState> eventReplay = new ArrayDeque<>();
 
     List<String> initialSetupData; // Will store all lines from input setup file
     List<String> initialRiderData; // will store all lines from input reader file
@@ -82,20 +81,16 @@ public class SimulationEngine{
         eventQueue.addEvent(event);
     }
 
-    public void addEventReplay(int eventStateId){
+    public void addEventReplay(SystemState systemState){
         if(eventReplay.size() == 3){
             System.out.println("We only go back 3 events, removing event before adding more.");
-            Integer e = eventReplay.removeLast();
-            System.out.println("Removed: " + e);
+            SystemState e = eventReplay.removeLast();
+            System.out.println("Added system state event for bus: " + e.getBusId());
         }
 
-        eventReplay.push(eventStateId);
-        System.out.println("Added event: " + eventStateId );
+        eventReplay.push(systemState);
+        System.out.println("Added system state event for bus : " + systemState.getBusId() );
         System.out.println(eventReplay);
-    }
-
-    public void addSystemState(int systemStateId, SystemState systemState){
-        systemStatesMap.put(systemStateId, systemState);
     }
 
     public Bus getBus(int busId){
@@ -110,13 +105,13 @@ public class SimulationEngine{
         return routeMap.get(routeid);
     }
 
-    public int getEventReplay(){
+    public SystemState getEventReplay(){
         return eventReplay.pollFirst();
     }
 
-    public SystemState getSystemState(int systemStateId){
-        return systemStatesMap.get(systemStateId);
-    }
+    //public SystemState getSystemState(int systemStateId){
+    //    return systemStatesMap.get(systemStateId);
+    //}
 
     public double calcDistance(Stop stop1, Stop stop2){
         return 70 * Math.sqrt(Math.pow(stop1.getLatitude() - stop2.getLatitude(), 2) + Math.pow(stop1.getLongitude() - stop2.getLongitude(), 2));
@@ -163,20 +158,11 @@ public class SimulationEngine{
             Bus bus = getBus(e.getObjectid());
             BusRoute route = bus.getRoute();
 
-            // add to replayEvent and eventStatesMap for replay capabilities  
-            Integer systemStateId = 0;
-            if(eventReplay != null && eventReplay.size() > 0) {
-                systemStateId = this.eventReplay.peekFirst() + 1;
-            }
-            else {
-                systemStateId = 1;
-            }
-            this.addEventReplay(systemStateId);
+            // add to systemState to replayEvent for replay capabilities  
             SystemState systemState = new SystemState(bus.getBusId(), bus.getArrivaltime(), 
                                         bus.getCapacity(), bus.getCurrentStop(), bus.getNextStopIndex(),
                                         bus.getRiderCount(), bus.getRoute(), bus.getSpeed(), bus.getCurrentStop().getWaitingCount());
-            this.addSystemState(systemStateId, systemState);
-
+            this.addEventReplay(systemState);
     
             int stopCurrentlyReachedIndex = bus.getNextStopIndex();
             Stop stopCurrentlyReached = route.getStopAtindex(stopCurrentlyReachedIndex);
@@ -397,11 +383,8 @@ public class SimulationEngine{
     }
 
     public String replay(){
-        int systemStateId = this.getEventReplay();
-        SystemState systemState = null;
-        if(systemStateId != 0) {
-            systemState = this.getSystemState(systemStateId);
-        }
+        SystemState systemState = this.getEventReplay();
+
         if (systemState != null){
             // Extract bus  id and stop id from System State 
             int busId = systemState.getBusId();
