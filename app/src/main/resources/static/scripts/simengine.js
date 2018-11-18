@@ -1,9 +1,10 @@
 class Engine {
-    constructor(kspeed, kcapacity, kwaiting, kcombined) {
-        this.kspeed = kspeed;
-        this.kcapacity = kcapacity;
-        this.kwaiting = kwaiting;
-        this.kcombined = kcombined;
+    constructor() {
+        this.kspeed = 0;
+        this.kcapacity = 0;
+        this.kwaiting = 0;
+        this.kcombined = 0;
+        this.num_rewinds_possible = 0;
 
         this.buslist = [];
         this.routelist = [];

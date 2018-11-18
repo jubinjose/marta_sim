@@ -1,4 +1,4 @@
-public class Bus{
+public class Bus implements Cloneable{
 
     private int busId;
     public int getBusId(){
@@ -90,5 +90,9 @@ public class Bus{
         return String.format("b:%d->s:%d@%d//p:%d", this.busId, this.route.getStopAtindex(this.nextStopIndex).getStopId(), 
                         this.arrivalTime, this.riderCount);
     }
+
+    public Object clone() throws CloneNotSupportedException{  
+        return super.clone();  
+    }  
 }
 

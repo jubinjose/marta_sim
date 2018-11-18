@@ -1,6 +1,10 @@
 import java.util.Random;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Stop{
+public class Stop implements Cloneable{
+
+    private static final Logger logger = LoggerFactory.getLogger("");
 
     private int stopId;
     public int getStopId(){
@@ -118,19 +122,34 @@ public class Stop{
     }
 
     public int getRidersArrive(){
-        return generateRandomInteger(ridersArriveLow, ridersArriveHigh);
+        int ridersArrive = generateRandomInteger(ridersArriveLow, ridersArriveHigh);
+        logger.info("getRidersArrive: " + ridersArrive);
+        return ridersArrive;
     }
 
     public int getRidersOff(){
-        return generateRandomInteger(ridersOffLow, ridersOffHigh);
+        int ridersOff =  generateRandomInteger(ridersOffLow, ridersOffHigh);
+        logger.info("getRidersOff: " + ridersOff);
+        return ridersOff;
     }
 
     public int getRidersOn(){
-        return generateRandomInteger(ridersOnLow, ridersOnHigh);
+        int ridersOn =  generateRandomInteger(ridersOnLow, ridersOnHigh);
+        logger.info("getRidersOn: " + ridersOn);
+        return ridersOn;
     }
 
     public int getRidersDepart(){
-        return generateRandomInteger(ridersDepartLow, ridersDepartHigh);
+        int ridersDepart =  generateRandomInteger(ridersDepartLow, ridersDepartHigh);
+        logger.info("getRidersDepart: " + ridersDepart);
+        return ridersDepart;
+    }
+
+    public String toString(){
+        return String.format("stop:%d , waiting:%d", this.stopId, this.waitingCount);
     }
    
+    public Object clone()throws CloneNotSupportedException{  
+        return super.clone();  
+    }
 }

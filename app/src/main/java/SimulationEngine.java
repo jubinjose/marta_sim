@@ -1,15 +1,20 @@
 import java.io.IOException;
 import java.util.*;
+
+import org.slf4j.Logger;
+
 import java.nio.file.*;
-import java.util.stream.*;
+import org.slf4j.LoggerFactory;
 
 public class SimulationEngine{
+
+    private static final Logger logger = LoggerFactory.getLogger("");
 
     private HashMap<Integer,Bus> busMap = new HashMap<Integer,Bus>();
     private HashMap<Integer,Stop> stopMap = new HashMap<Integer,Stop>();
     private HashMap<Integer,BusRoute> routeMap = new HashMap<Integer,BusRoute>();
     private EventQueue eventQueue = new EventQueue();
-    private Deque<SystemState> eventReplay = new ArrayDeque<>();
+    private Deque<SystemState> rewindStack = new ArrayDeque<>();
 
     List<String> initialSetupData; // Will store all lines from input setup file
     List<String> initialRiderData; // will store all lines from input reader file
@@ -81,18 +86,6 @@ public class SimulationEngine{
         eventQueue.addEvent(event);
     }
 
-    public void addEventReplay(SystemState systemState){
-        if(eventReplay.size() == 3){
-            System.out.println("We only go back 3 events, removing event before adding more.");
-            SystemState e = eventReplay.removeLast();
-            System.out.println("Added system state event for bus: " + e.getBusId());
-        }
-
-        eventReplay.push(systemState);
-        System.out.println("Added system state event for bus : " + systemState.getBusId() );
-        System.out.println(eventReplay);
-    }
-
     public Bus getBus(int busId){
         return busMap.get(busId);
     }
@@ -105,13 +98,17 @@ public class SimulationEngine{
         return routeMap.get(routeid);
     }
 
-    public SystemState getEventReplay(){
-        return eventReplay.pollFirst();
+    public Collection<BusRoute> getRoutes(){
+        return Collections.unmodifiableCollection(routeMap.values());
     }
 
-    //public SystemState getSystemState(int systemStateId){
-    //    return systemStatesMap.get(systemStateId);
-    //}
+    public Collection<Stop> getStops(){
+        return Collections.unmodifiableCollection(stopMap.values());
+    }
+
+    public Collection<Bus> getBuses(){
+        return Collections.unmodifiableCollection(busMap.values());
+    }
 
     public double calcDistance(Stop stop1, Stop stop2){
         return 70 * Math.sqrt(Math.pow(stop1.getLatitude() - stop2.getLatitude(), 2) + Math.pow(stop1.getLongitude() - stop2.getLongitude(), 2));
@@ -140,58 +137,8 @@ public class SimulationEngine{
 
     }
 
-    // Run upto the specified number of iterations and returns list of event outputs at each iteration
-    // Don't write directly to console or return a string so that we keep the method as generic/flexible as possible
-    // Let the caller handle what to do with the results
-    public List<String> runSimulation(int maxIterations){
-
-        List<String> resultList = new ArrayList<String>();
-
-        int iterationCount = 0;
-        while (iterationCount < maxIterations){
-
-            Event e = eventQueue.popEventWithLowestTime();
-            if (e == null) break;
-
-            if (e.getType() != EventType.MOVE_BUS) continue; // Ignoring out of scope event types
-            
-            Bus bus = getBus(e.getObjectid());
-            BusRoute route = bus.getRoute();
-
-            // add to systemState to replayEvent for replay capabilities  
-            SystemState systemState = new SystemState(bus.getBusId(), bus.getArrivaltime(), 
-                                        bus.getCapacity(), bus.getCurrentStop(), bus.getNextStopIndex(),
-                                        bus.getRiderCount(), bus.getRoute(), bus.getSpeed(), bus.getCurrentStop().getWaitingCount());
-            this.addEventReplay(systemState);
-    
-            int stopCurrentlyReachedIndex = bus.getNextStopIndex();
-            Stop stopCurrentlyReached = route.getStopAtindex(stopCurrentlyReachedIndex);
-
-            int stopHeadedToIndex = bus.getRoute().getNextStopIndex(stopCurrentlyReachedIndex);
-            Stop stopHeadedTo = route.getStopAtindex(stopHeadedToIndex);
-
-            int arrivalTimeAtNextStop = e.getTime() + calcTravelTime(stopCurrentlyReached, stopHeadedTo, bus.getSpeed());
-
-            // Passenger math
-            int waitingAtStop = stopCurrentlyReached.getWaitingCount() + stopCurrentlyReached.getRidersArrive();
-            int gettingOffBus = Math.min(bus.getRiderCount(), stopCurrentlyReached.getRidersOff());
-            int boardingBus = Math.min(waitingAtStop, stopCurrentlyReached.getRidersOn());
-            bus.setRiderCount(bus.getRiderCount() - gettingOffBus + boardingBus);
-            int leavingStop = Math.min(waitingAtStop + gettingOffBus, stopCurrentlyReached.getRidersDepart());
-            stopCurrentlyReached.setWaitingCount(waitingAtStop + gettingOffBus - leavingStop);
-
-            resultList.add(bus.toString());
-
-            addEvent(new Event(arrivalTimeAtNextStop, EventType.MOVE_BUS, bus.getBusId()));
-
-            bus.setCurrentStop(stopCurrentlyReached);
-            bus.setNextStopIndex(stopHeadedToIndex);
-            bus.setArrivaltime(arrivalTimeAtNextStop);
-
-            iterationCount++;
-        }
-
-        return resultList;
+    public int getNumberOfRewindsPossible(){
+        return rewindStack.size();
     }
 
     // Initialize the simulation from input files
@@ -211,6 +158,7 @@ public class SimulationEngine{
         routeMap = new HashMap<Integer,BusRoute>();
 
         eventQueue = new EventQueue();
+        rewindStack = new ArrayDeque<>();
 
         for (String line : this.initialSetupData) {
 
@@ -308,112 +256,125 @@ public class SimulationEngine{
         }
     }
 
-    // JSON Returning methods below
+    // Run upto the specified number of iterations and returns list of event outputs at each iteration
+    // Don't write directly to console or return a string so that we keep the method as generic/flexible as possible
+    // Let the caller handle what to do with the results
+    public List<String> runSimulation(int maxIterations){
 
-    // We can always return entire system state for every operation and have the UI redraw everything
-    // But it is much better to just send what is really updated for actions like Move Bus etc where onyl a bus and stop need to be redrawn in UI
+        List<String> resultList = new ArrayList<String>();
 
+        int iterationCount = 0;
+        while (iterationCount < maxIterations){
 
-    private String createBusJson(Bus bus){
-        return String.format(
-            "{\"id\":%d, \"current_stop_id\":%d, \"arrival_time\":%d, \"status\": \"%s\", \"rider_count\":%d,\"route\":%d, \"capacity\":%d, \"speed\":%d}",
-            bus.getBusId(), bus.getCurrentStop().getStopId(), bus.getArrivaltime(), bus.toString(), bus.getRiderCount(), 
-            bus.getRoute().getRouteId(),bus.getCapacity(),bus.getSpeed());
-    }
+            Event event = eventQueue.popEventWithLowestTime();
+            if (event == null) break;
 
-    private String createStopJson(Stop stop){
-        return String.format("{\"id\":%d,\"name\":\"%s\",\"waiting\":%d}", stop.getStopId(), stop.getName(), stop.getWaitingCount());
-    }
+            if (event.getType() != EventType.MOVE_BUS) continue; // Ignoring out of scope event types
+            
+            Bus bus = getBus(event.getObjectid());
+            BusRoute route = bus.getRoute();
 
-    private String createRouteJson(BusRoute route){
-        return String.format("{\"id\":%d,\"stops\":[%s]}", route.getRouteId(), 
-                route.getStopList().stream()
-                .map(s -> s.getStopId() + "")
-                .collect(Collectors.joining(",")));
-    }
+            int stopReachedIndex = bus.getNextStopIndex();
+            Stop stopReached = route.getStopAtindex(stopReachedIndex);
 
-    public String getState(){
-        String json = String.format("{\"kspeed\":%s,\"kcapacity\":%s,\"kwaiting\":%s,\"kbuses\":%s,\"kcombined\":%s,\"efficiency\":%s,\"routes\":[",
-                            sysSpeed + "", sysCapacity + "", sysWaiting + "", sysBuses + "", sysCombined + "", calcSystemEfficiency());
-                            
-        
-        String csv = "";
+            int stopHeadedToIndex = bus.getRoute().getNextStopIndex(stopReachedIndex);
+            Stop stopHeadedTo = route.getStopAtindex(stopHeadedToIndex);
 
-        for (BusRoute route : routeMap.values()) {
-            //StringJoiner
-            csv = csv + String.format("%s,", createRouteJson(route));
+            int arrivalTimeAtNextStop = event.getTime() + calcTravelTime(stopReached, stopHeadedTo, bus.getSpeed());
+
+            // add to rewind queue for rewind capability
+            if (rewindStack.size()==3)  { rewindStack.removeLast(); }
+            SystemState systemState = null;
+            
+            try{
+                systemState = new SystemState((Bus)bus.clone(), (Stop)stopReached.clone(), event);
+            }
+            catch(CloneNotSupportedException cex){
+
+            }
+            rewindStack.push(systemState);
+
+            // Passenger math
+            logger.info(String.format("Bus %d reached stop %d", bus.getBusId(), stopReached.getStopId()));
+            logger.info("Waiting at stop: " + stopReached.getWaitingCount());
+            int waitingAtStop = stopReached.getWaitingCount() + stopReached.getRidersArrive();
+            logger.info("Combined waiting at stop: " + waitingAtStop);
+            logger.info("Bus pre Rider Count: " + bus.getRiderCount());
+            int gettingOffBus = Math.min(bus.getRiderCount(), stopReached.getRidersOff());
+            logger.info("Actual getting off bus: " + gettingOffBus);
+            int boardingBus = Math.min(waitingAtStop, stopReached.getRidersOn());
+            logger.info("Actual boarding bus: " + boardingBus);
+            bus.setRiderCount(bus.getRiderCount() - gettingOffBus + boardingBus);
+            logger.info("Bus post Rider Count: " + bus.getRiderCount());
+            int leavingStop = Math.min(waitingAtStop + gettingOffBus, stopReached.getRidersDepart());
+            logger.info("Actual leaving stop: " + leavingStop);
+            stopReached.setWaitingCount(waitingAtStop + gettingOffBus - leavingStop);
+            logger.info("Remaining waiting at stop: " + stopReached.getWaitingCount());
+
+            resultList.add(bus.toString());
+
+            addEvent(new Event(arrivalTimeAtNextStop, EventType.MOVE_BUS, bus.getBusId()));
+
+            bus.setCurrentStop(stopReached);
+            bus.setNextStopIndex(stopHeadedToIndex);
+            bus.setArrivaltime(arrivalTimeAtNextStop);
+
+            iterationCount++;
         }
-        csv = csv.replaceAll(",$", ""); // Remove trailing comma
 
-        json = json + csv + "],\"stops\":[";
-
-        csv = "";
-        for (Stop stop : stopMap.values()) {
-            csv = csv + String.format("%s,", createStopJson(stop));
-        }
-        csv = csv.replaceAll(",$", ""); // Remove trailing comma
-
-        json = json + csv + "],\"buses\":[";
-
-        csv = "";
-        for (Bus bus : busMap.values()) {
-            csv = csv + String.format("%s,", createBusJson(bus));
-        }
-        csv = csv.replaceAll(",$", ""); // Remove trailing comma
-
-        return json + csv + "]}";
-        
+        return resultList;
     }
 
     public String moveBus(){
+        
+        logger.info("command:moveBus");
         List<String> resultList = runSimulation(1);
+
         if (!resultList.isEmpty()){
-            String result = resultList.get(0);
-
-            // Extract bus  id and stop id from a string like "b:67->s:16@0//p:0"
-            int busId = Integer.parseInt(result.split(":")[1].split("-")[0]);
-            int stopId = Integer.parseInt(result.split(">")[1].split(":")[1].split("@")[0]);
-
-            return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s, \"replay\":true}", 
-                    createBusJson(getBus(busId)), createStopJson(getStop(stopId)), calcSystemEfficiency());
+            return resultList.get(0);
         }
         else{
-            return "{\"move\":false}";
+            return null;
         }
     }
 
-    public String replay(){
-        SystemState systemState = this.getEventReplay();
+    public ArrayList<SystemState> rewind(int numEvents){
 
-        if (systemState != null){
-            // Extract bus  id and stop id from System State 
-            int busId = systemState.getBusId();
-            int stopId = systemState.getBusCurrentStop().getStopId();
-           
-            // resetting the Bus properties 
-            Bus bus = this.getBus(busId);
-            bus.setArrivaltime(systemState.getBusArrivaltime());
-            bus.setCapacity(systemState.getBusCapacity());
-            bus.setCurrentStop(systemState.getBusCurrentStop());
-            bus.setNextStopIndex(systemState.getBusNextStopIndex());
-            bus.setRiderCount(systemState.getRiderCount());
-            bus.setRoute(systemState.getBusRoute());
-            bus.setSpeed(systemState.getBusSpeed());
+        logger.info("command:rewind");
+        ArrayList<SystemState> resultList = new ArrayList<SystemState>();
+        
+        while (numEvents>resultList.size()){
 
-            // reset waiting count 
-            Stop stop = this.getStop(systemState.getBusCurrentStop().getStopId());
-            stop.setWaitingCount(systemState.getWaiting());
-           
-            if(this.eventReplay.size() > 0){
-                return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s, \"replay\":true}", 
-                    createBusJson(getBus(busId)), createStopJson(getStop(stopId)), calcSystemEfficiency());
-            } else {
-                return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s, \"replay\":false}", 
-                    createBusJson(getBus(busId)), createStopJson(getStop(stopId)), calcSystemEfficiency());
-            }
+            SystemState systemState = rewindStack.poll();
+            if (systemState == null) return resultList;
+
+            resultList.add(systemState);
+
+            // Extract cloned bus, stop from System State 
+            Bus savedBus = systemState.getBus();
+            Stop savedStop = systemState.getStop();
+        
+            // reset the actual Bus properties 
+            Bus bus = this.getBus(savedBus.getBusId());
+            bus.setArrivaltime(savedBus.getArrivaltime());
+            bus.setCapacity(savedBus.getCapacity());
+            bus.setCurrentStop(savedBus.getCurrentStop());
+            bus.setNextStopIndex(savedBus.getNextStopIndex());
+            bus.setRiderCount(savedBus.getRiderCount());
+            bus.setRoute(savedBus.getRoute());
+            bus.setSpeed(savedBus.getSpeed());
+
+            // reset the actual Stop properties 
+            Stop stop = this.getStop(savedStop.getStopId());
+            stop.setWaitingCount(savedStop.getWaitingCount());
+
+            // Remove the current event in eventQueue for this bus
+            eventQueue.removeEventWithObjectId(bus.getBusId());
+
+            // Reinstate the former event that caused the move that was rolled back
+            eventQueue.addEvent(systemState.getEvent());
         }
-        else{
-            return "{\"move\":false, \"replay\":false}";
-        }
+
+        return resultList;
     }
 }
