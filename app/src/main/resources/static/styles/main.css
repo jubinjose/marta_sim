@@ -1,26 +1,60 @@
-tr.desc-row>td {
-    padding-bottom: 2em;
-    border-bottom: 1pt solid black;
+/* Panel left has Main table which is where we draw the stops and buses */
+
+#panel-left{
+    width: 75%;
+    float: left;
 }
 
-td {
+#main-table {
+    /*border: 1px solid black;*/
     width: auto;
-    padding: 10px;
 }
 
-td.min {
-    width: 100px;
-    ;
-    white-space: nowrap;
+#main-table tr.desc-row td {
+    padding-bottom: 7px;
+    border-bottom: 3px solid blue;
+    margin-bottom: 125px;
 }
 
-td.filler {
-
-    border-bottom: 1pt solid red;
-    ;
+#main-table tr.image-row td {
+    padding-top: 20px;
 }
 
-#maintable {
-    border-color: #00f;
-    border-width: 1
+#main-table td {
+    /*width: auto;*/
+    padding-right:15px;
+}
+
+button {
+    background-color: #fed;
+    border:1px solid; 
+    border-color: #696 #363 #363 #696; 
+}
+
+#bus-buttons button { 
+    margin-bottom: 15px;
+}
+
+/* Panel right is where all the system info and action buttons are located */
+
+#panel-right {
+    background-color: lightblue;
+    float:right;
+    padding-left: 5px;
+}
+
+#panel-right-system {
+    background-color: lightblue; 
+    padding-left: 5px; 
+    margin-bottom: 5px
+}
+
+#panel-right-efficiency{
+    background-color: lightgreen; 
+    padding-left: 5px; 
+    margin-bottom:15px
+}
+
+#rewinds-possible{
+    padding-left:5px;
 }
