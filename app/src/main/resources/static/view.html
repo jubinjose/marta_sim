@@ -17,44 +17,48 @@
 </head>
 
 <body>
-    <div style="width: 75%;float: left;">
+    <div id="panel-left">
 
-        <table style="width:auto" id="main-table">
+        <table id="main-table">
 
         </table>
         <div id="update-sys" class="modal">
-                <!-- Modal content -->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <span class="close">&times;</span>
-                        <h2>Update System Variables here test</h2>
-                    </div>
-                    <div class="modal-body">
-                        <p>text fields to update kwaiting, kspeed, kcombined, kbuses, kcapacity</p>
-                        <p>Also add validations</p>
-                    </div>
-                    <!-- <div class="modal-footer">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close">&times;</span>
+                    <h2>Update System Variables here test</h2>
+                </div>
+                <div class="modal-body">
+                    <p>text fields to update kwaiting, kspeed, kcombined, kbuses, kcapacity</p>
+                    <p>Also add validations</p>
+                </div>
+                <!-- <div class="modal-footer">
                         <h3>Modal Footer</h3>
                     </div> -->
-                </div>
             </div>
+        </div>
     </div>
-    <div style="float:right;">
-        <div style="background-color: lightpink; padding-left: 5px; margin-bottom: 10px">
+    <div id="panel-right">
+        <div id="panel-right-efficiency">
+            <div>System Efficiency - <span id="efficiency"></span></div>
+        </div>
+        <hr />
+        <div id="panel-right-system">
             <div>kSpeed - <span id="kspeed"></span></div>
             <div>kCapacity - <span id="kcapacity"></span></div>
             <div>kWaiting - <span id="kwaiting"></span></div>
             <div>kBuses - <span id="kbuses"></span></div>
             <div>kCombined - <span id="kcombined"></span></div>
         </div>
-        <button id="btn-update-sys" style="margin-bottom:15px">Update System Parameters </button>
-        <div style="background-color: lightgreen; padding-left: 5px; margin-bottom:15px ">
-            <div>System Efficiency - <span id="efficiency"></span></div>
+        <button id="btn-update-sys">Update System Parameters </button>
+        <hr/>
+        <div id="bus-buttons">
+            <div><button id="btn-update-bus">Update Bus</button></div>
+            <div><button id="btn-move-bus">Move Bus</button></div>
+            <div><button id="btn-rewind">Rewind</button><span id="rewinds-possible"></span></div>
+            <div><button id="btn-reset">Reset System</button></div>
         </div>
-        <div><button id="btn-update-bus" style="margin-bottom:15px">Update Bus</button></div>
-        <div><button id="btn-move-bus" style="margin-bottom:15px">Move Bus</button></div>
-        <div><button id="btn-rewind" style="margin-bottom:15px">Rewind</button></div>
-        <div><button id="btn-reset" style="margin-bottom:15px">Reset System</button></div>
 
     </div>
     <script src="scripts/update-sys.js"></script>

@@ -31,9 +31,22 @@ function load_initial_data(data){
     }
 }
 
-function update_efficiency_rewindbutton(){
-    $("#btn-rewind").prop("disabled",engine.num_rewinds_possible == 0);
+function update_efficiency_rewind(){
+    
     $("#efficiency").text(engine.efficiency);
+
+    let rewind_count_span = $("#rewinds-possible");
+    let btn_rewind = $("#btn-rewind");
+
+    if (engine.num_rewinds_possible == 0){
+        btn_rewind.prop("disabled", true);
+        rewind_count_span.hide();
+    }
+    else{
+        btn_rewind.prop("disabled", false);
+        rewind_count_span.show();
+        rewind_count_span.text(engine.num_rewinds_possible + ' remaining');
+    }
 }
 
 function draw_initial_ui(){
@@ -44,7 +57,7 @@ function draw_initial_ui(){
     $("#kbuses").text(engine.kbuses);
     $("#kcombined").text(engine.kcombined);
 
-    update_efficiency_rewindbutton();
+    update_efficiency_rewind();
     
     var table = document.getElementById("main-table");
     table.innerHTML = ""; // Clear any rows if present - need this when calling from Reset
@@ -56,10 +69,10 @@ function draw_initial_ui(){
     
         var row = table.insertRow();
         row.id = "stop-" + stop.id;
-        row.stop = stop;
+        row.className = "image-row"; // To leave space before next row
     
         var cell = row.insertCell();
-        cell.className = 'min';
+        cell.className = 'stop';
         cell.innerHTML="<img src='images/stop-48.png' alt='stop'/>";
     
         row = table.insertRow();
@@ -67,7 +80,7 @@ function draw_initial_ui(){
         row.className = "desc-row"; // To leave space before next row
     
         cell = row.insertCell();
-        cell.className = 'min';
+        cell.className = 'stop';
         cell.innerHTML = stop.get_display_info();
     
         add_buses_to_stop(stop.id, stop.buslist)
@@ -135,7 +148,7 @@ function move_bus(){
 
             engine.efficiency = data.efficiency;
             engine.num_rewinds_possible = data.num_rewinds_possible;
-            update_efficiency_rewindbutton();
+            update_efficiency_rewind();
             
         }
 
@@ -190,7 +203,7 @@ function rewind(){
 
             engine.efficiency = data.efficiency;
             engine.num_rewinds_possible = data.num_rewinds_possible;
-            update_efficiency_rewindbutton();
+            update_efficiency_rewind();
         }
     }, "json" );
 }
