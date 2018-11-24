@@ -296,20 +296,41 @@ public class SimulationEngine{
 
             // Passenger math
             logger.info(String.format("Bus %d reached stop %d", bus.getBusId(), stopReached.getStopId()));
-            logger.info("Waiting at stop: " + stopReached.getWaitingCount());
-            int waitingAtStop = stopReached.getWaitingCount() + stopReached.getRidersArrive();
-            logger.info("Combined waiting at stop: " + waitingAtStop);
-            logger.info("Bus pre Rider Count: " + bus.getRiderCount());
-            int gettingOffBus = Math.min(bus.getRiderCount(), stopReached.getRidersOff());
-            logger.info("Actual getting off bus: " + gettingOffBus);
-            int boardingBus = Math.min(waitingAtStop, stopReached.getRidersOn());
-            logger.info("Actual boarding bus: " + boardingBus);
-            bus.setRiderCount(bus.getRiderCount() - gettingOffBus + boardingBus);
+
+            logger.info("Currently waiting at stop: " + stopReached.getWaitingCount());
+            int ridersArrive = stopReached.getRidersArrive();
+            logger.info("ridersArrive: " + ridersArrive);
+            stopReached.setWaitingCount(stopReached.getWaitingCount() + ridersArrive); // Set new waiting count for stop
+            logger.info("New waiting at stop before boarding: " + stopReached.getWaitingCount());
+
+            logger.info("Bus rider count before exchange: " + bus.getRiderCount());
+            int ridersOff = stopReached.getRidersOff();
+            logger.info("ridersOff: " + ridersOff);
+            int transfers = Math.min(bus.getRiderCount(), ridersOff); // can't disembark more than those who are already on the bus
+            logger.info("Actual getting off bus (transfers): " + transfers);
+            bus.setRiderCount(bus.getRiderCount() - transfers); // People got off the bus
+
+            int ridersOn = stopReached.getRidersOn();logger.info("ridersOff: " + ridersOff);
+            logger.info("ridersOn: " + ridersOn);
+            int whoWantToGetOnBus = Math.min(stopReached.getWaitingCount(), ridersOn);
+
+            logger.info("Bus capacity: " + bus.getCapacity());
+            int actualWhoCanGetOnBus = Math.min(bus.getCapacity() - bus.getRiderCount(), whoWantToGetOnBus);
+            logger.info("Those who can get on bus based on capacity: " + actualWhoCanGetOnBus);
+            bus.setRiderCount(bus.getRiderCount() + actualWhoCanGetOnBus); // Board bus
+            stopReached.setWaitingCount(stopReached.getWaitingCount() - actualWhoCanGetOnBus); // Adjust stop's waiting count after boarding bus
             logger.info("Bus post Rider Count: " + bus.getRiderCount());
-            int leavingStop = Math.min(waitingAtStop + gettingOffBus, stopReached.getRidersDepart());
-            logger.info("Actual leaving stop: " + leavingStop);
-            stopReached.setWaitingCount(waitingAtStop + gettingOffBus - leavingStop);
-            logger.info("Remaining waiting at stop: " + stopReached.getWaitingCount());
+
+            int ridersDepart = stopReached.getRidersDepart();
+            if (ridersDepart <= transfers){
+                transfers = transfers - ridersDepart;
+                stopReached.setWaitingCount(stopReached.getWaitingCount() + transfers);
+            }
+            else{
+                stopReached.setWaitingCount(stopReached.getWaitingCount() - (ridersDepart - transfers));
+            }
+            logger.info("ridersDepart: " + ridersDepart);
+            logger.info("Final waiting count at stop: " + stopReached.getWaitingCount());
 
             resultList.add(bus.toString());
 

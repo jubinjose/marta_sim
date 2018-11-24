@@ -123,25 +123,21 @@ public class Stop implements Cloneable{
 
     public int getRidersArrive(){
         int ridersArrive = generateRandomInteger(ridersArriveLow, ridersArriveHigh);
-        logger.info("getRidersArrive: " + ridersArrive);
         return ridersArrive;
     }
 
     public int getRidersOff(){
         int ridersOff =  generateRandomInteger(ridersOffLow, ridersOffHigh);
-        logger.info("getRidersOff: " + ridersOff);
         return ridersOff;
     }
 
     public int getRidersOn(){
         int ridersOn =  generateRandomInteger(ridersOnLow, ridersOnHigh);
-        logger.info("getRidersOn: " + ridersOn);
         return ridersOn;
     }
 
     public int getRidersDepart(){
         int ridersDepart =  generateRandomInteger(ridersDepartLow, ridersDepartHigh);
-        logger.info("getRidersDepart: " + ridersDepart);
         return ridersDepart;
     }
 
