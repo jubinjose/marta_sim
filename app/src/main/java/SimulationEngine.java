@@ -331,7 +331,7 @@ public class SimulationEngine{
             logger.info("Actual getting off bus (transfers): " + transfers);
             bus.setRiderCount(bus.getRiderCount() - transfers); // People got off the bus
 
-            int ridersOn = stopReached.getRidersOn();logger.info("ridersOff: " + ridersOff);
+            int ridersOn = stopReached.getRidersOn();
             logger.info("ridersOn: " + ridersOn);
             int whoWantToGetOnBus = Math.min(stopReached.getWaitingCount(), ridersOn);
 
@@ -417,5 +417,18 @@ public class SimulationEngine{
         return resultList;
     }
 
+    public Bus changeBus(int busId, int speed, int capacity){
+        
+        Bus bus = getBus(busId);
+        bus.changeBus(speed, capacity);
+        return bus;
+    }
 
+    public Bus changeBus(int busId, int speed, int capacity, int routeId, int stopIndex){
+        
+        Bus bus = getBus(busId);
+        BusRoute route = getRoute(routeId);
+        bus.changeBus(speed, capacity, route, stopIndex);
+        return bus;
+    }
 }

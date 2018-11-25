@@ -118,41 +118,41 @@ function move_bus(){
 
             let prev_stop = engine.stoplist.find(s => s.id === bus.current_stop_id);
 
-            // remove bus from current stop object's buslist
+            // remove bus from previous stop object's buslist
             let prev_stop_bus_index = prev_stop.buslist.findIndex(b => b.id === bus.id);
             prev_stop.buslist.splice(prev_stop_bus_index, 1); 
 
-            // Update bus object with post move bus data from server
-            bus.arrival_time = data.bus.arrival_time;
-            bus.rider_count = data.bus.rider_count;
-            bus.status = data.bus.status;
-            bus.current_stop_id = data.bus.current_stop_id;
-
-            // Find the stop bus reached
-            let stop = engine.stoplist.find(s => s.id === data.stop.id);
-
-            stop.waiting_count = data.stop.waiting;
-
-            stop.buslist.push(bus); // add bus to the stop it reached
-            
-            // Remove bus cell and bus description cell from previous stop row
+            // Also update UI to remove bus cell and bus description cell from previous stop row
+                        
             let node = document.getElementById('bus-' + bus.id);
             node.parentNode.removeChild(node);
             node = document.getElementById('bus-' + bus.id + '-desc');
             node.parentNode.removeChild(node);
 
-            // Add bus to new stop row
-            add_buses_to_stop(data.stop.id, [bus]);
+            // Update front end bus object with post move data from server
+            bus.arrival_time = data.bus.arrival_time;
+            bus.rider_count = data.bus.rider_count;
+            bus.status = data.bus.status;
+            bus.current_stop_id = data.bus.current_stop_id;
+            bus.capacity = data.bus.capacity;
+            bus.speed = data.bus.speed;
 
-            $("#stop-" + data.stop.id + "-desc").find('td:first').html(stop.get_display_info());
+            // Find the stop bus reached
+            let stop = engine.stoplist.find(s => s.id === bus.current_stop_id);
+
+            stop.waiting_count = data.waiting_at_stop;
+            stop.buslist.push(bus); // add bus to the stop it reached
+
+            // UI update yo show new waiting count for the stop
+            $("#stop-" + stop.id + "-desc").find('td:first').html(stop.get_display_info());
+            
+            add_buses_to_stop(stop.id, [bus]); // UI update to add bus to new stop row
 
             engine.efficiency = data.efficiency;
             engine.num_rewinds_possible = data.num_rewinds_possible;
             update_efficiency_rewind();
-            
         }
-
-        
+       
 
     }, "json" );
 }
@@ -208,6 +208,21 @@ function rewind(){
     }, "json" );
 }
 
+function change_bus(){
+    var postdata = {};
+    postdata.busid = 67;
+    postdata.speed = 10;
+    postdata.capacity = 100;
+    postdata.route = 56;
+    postdata.stopindex = 2;
+
+    $.post("/changebus", postdata)
+    .done(function( data ) {
+        console.log("post successsssssssss");
+    });
+}
+    
+
 var engine;
 
 $( document ).ready(function() {
@@ -222,12 +237,12 @@ $( document ).ready(function() {
         draw_initial_ui();
 
         // Hookup move bus event handler
-        $( "#btn-move-bus").click(function() {
+        $("#btn-move-bus").click(function() {
             move_bus();
         });
 
         // Hookup reset bus event handler
-        $( "#btn-reset").click(function() {
+        $("#btn-reset").click(function() {
             $.get( "/reset", function( data ) {
                 load_initial_data(data);
                 draw_initial_ui();
@@ -235,8 +250,12 @@ $( document ).ready(function() {
         });
 
          // Hookup replay bus event handler
-        $( "#btn-rewind").click(function() {
+        $("#btn-rewind").click(function() {
             rewind();
+        });
+
+        $("#btn-change-bus").click(function() {
+            change_bus();
         });
         
     }, "json" );

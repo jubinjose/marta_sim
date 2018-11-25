@@ -69,6 +69,26 @@ public class SimulationService {
             return createJsonSystemState();
         });
 
+        post("/changebus", (request, response) -> {
+
+            int busId = Integer.parseInt(request.queryParams("busid"));
+            int speed = Integer.parseInt(request.queryParams("speed"));
+            int capacity = Integer.parseInt(request.queryParams("capacity"));
+            String routeId = request.queryParams("route");
+            String stopIndex = request.queryParams("stopindex");
+
+            Bus bus = null;
+
+            if (routeId!=null){
+                bus = engine.changeBus(busId, speed, capacity, Integer.parseInt(routeId), Integer.parseInt(stopIndex));
+            }
+            else{
+                bus = engine.changeBus(busId, speed, capacity);
+            }
+
+            return createJsonBus(bus);
+        });
+
     }
 
 
@@ -138,12 +158,12 @@ public class SimulationService {
 
         if (result==null) return "{\"move\":false}";
 
-        // Extract bus id and stop id from a string like "b:67->s:16@0//p:0"
+        // Extract bus id from a string like "b:67->s:16@0//p:0"
         int busId = Integer.parseInt(result.split(":")[1].split("-")[0]);
-        int stopId = Integer.parseInt(result.split(">")[1].split(":")[1].split("@")[0]);
+        Bus bus = engine.getBus(busId);
 
-        return String.format("{\"move\":true,\"bus\":%s,\"stop\":%s,\"efficiency\":%s, \"num_rewinds_possible\":%d}", 
-                createJsonBus(engine.getBus(busId)), createJsonStop(engine.getStop(stopId)), engine.calcSystemEfficiency(), engine.getNumberOfRewindsPossible());
+        return String.format("{\"move\":true,\"bus\":%s,\"efficiency\":%s, \"num_rewinds_possible\":%d, \"waiting_at_stop\":%d}", 
+                createJsonBus(bus), engine.calcSystemEfficiency(), engine.getNumberOfRewindsPossible(), bus.getCurrentStop().getWaitingCount() );
     }
 
     public static String createJsonRewind(int numEventsToRewind){
