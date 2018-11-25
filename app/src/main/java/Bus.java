@@ -1,3 +1,5 @@
+import spark.Route;
+
 public class Bus implements Cloneable{
 
     private int busId;
@@ -72,6 +74,16 @@ public class Bus implements Cloneable{
         speed = val;
     }
 
+    private boolean hasPendingChanges;
+    public boolean getHasPendingChanges(){
+        return hasPendingChanges;
+    }
+
+    private int newSpeed;
+    private int newCapacity;
+    private BusRoute newRoute;
+    private int newNextStopIndex;
+
     public Bus(int busId, BusRoute route, int stopIndex, int riderCapacity, int speed ) throws Exception {
 
         if (stopIndex <0 || stopIndex >= route.getStopList().size()){
@@ -93,6 +105,24 @@ public class Bus implements Cloneable{
 
     public Object clone() throws CloneNotSupportedException{  
         return super.clone();  
-    }  
+    }
+
+    public void changeBus(int aSpeed, int aCapacity, BusRoute aRoute, int aNewNextStopIndex){
+        hasPendingChanges = true;
+        newSpeed = aSpeed;
+        newCapacity = aCapacity;
+        newRoute = aRoute;
+        newNextStopIndex = aNewNextStopIndex;
+    }
+
+    public void applyPendingChanges(){
+        if (hasPendingChanges){
+            this.setSpeed(newSpeed);
+            this.setCapacity(newCapacity);
+            this.setRoute(newRoute);
+            this.setNextStopIndex(newNextStopIndex);
+            hasPendingChanges = false;
+        }
+    }
 }
 
