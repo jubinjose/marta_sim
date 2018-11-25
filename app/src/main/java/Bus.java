@@ -79,6 +79,13 @@ public class Bus implements Cloneable{
         return hasPendingChanges;
     }
 
+    private boolean hasPendingRouteChange;
+    public boolean getHasPendingRouteChange(){
+        return hasPendingRouteChange;
+    }
+
+
+
     private int newSpeed;
     private int newCapacity;
     private BusRoute newRoute;
@@ -107,20 +114,30 @@ public class Bus implements Cloneable{
         return super.clone();  
     }
 
-    public void changeBus(int aSpeed, int aCapacity, BusRoute aRoute, int aNewNextStopIndex){
+    public void changeBus(int aSpeed, int aCapacity){
         hasPendingChanges = true;
         newSpeed = aSpeed;
         newCapacity = aCapacity;
+    }
+
+    public void changeBus(int aSpeed, int aCapacity, BusRoute aRoute, int aNewNextStopIndex){
+        hasPendingChanges = true;
+        changeBus(aSpeed, aCapacity);
         newRoute = aRoute;
         newNextStopIndex = aNewNextStopIndex;
+        hasPendingRouteChange = true;
     }
 
     public void applyPendingChanges(){
         if (hasPendingChanges){
             this.setSpeed(newSpeed);
             this.setCapacity(newCapacity);
-            this.setRoute(newRoute);
-            this.setNextStopIndex(newNextStopIndex);
+            
+            if (hasPendingRouteChange){
+                this.setRoute(newRoute);
+                this.setNextStopIndex(newNextStopIndex);
+                hasPendingRouteChange = false;
+            }
             hasPendingChanges = false;
         }
     }

@@ -277,12 +277,9 @@ public class SimulationEngine{
             int stopReachedIndex = bus.getNextStopIndex();
             Stop stopReached = route.getStopAtindex(stopReachedIndex);
 
-            int stopHeadedToIndex = bus.getRoute().getNextStopIndex(stopReachedIndex);
-            Stop stopHeadedTo = route.getStopAtindex(stopHeadedToIndex);
+            bus.setCurrentStop(stopReached);
 
-            int arrivalTimeAtNextStop = event.getTime() + calcTravelTime(stopReached, stopHeadedTo, bus.getSpeed());
-
-            // add to rewind queue for rewind capability
+            // add curent state to rewind queue for rewind capability
             if (rewindStack.size()==3)  { rewindStack.removeLast(); }
             SystemState systemState = null;
             
@@ -293,6 +290,30 @@ public class SimulationEngine{
 
             }
             rewindStack.push(systemState);
+
+            // Apply bus changes and calculate next stop
+
+            int stopHeadedToIndex;
+            Stop stopHeadedTo;
+            boolean hadRouteChange = bus.getHasPendingRouteChange();
+
+            if (bus.getHasPendingChanges()){
+                bus.applyPendingChanges();
+            }
+
+            if (hadRouteChange){
+                // Use route and stop from the bus changes that got applied
+                stopHeadedToIndex = bus.getNextStopIndex();
+                stopHeadedTo = bus.getRoute().getStopAtindex(bus.getNextStopIndex());
+            }
+            else{ // Find next stop on route
+                stopHeadedToIndex = bus.getRoute().getNextStopIndex(stopReachedIndex);
+                stopHeadedTo = route.getStopAtindex(stopHeadedToIndex);
+                bus.setNextStopIndex(stopHeadedToIndex);
+            }
+
+            int arrivalTimeAtNextStop = event.getTime() + calcTravelTime(stopReached, stopHeadedTo, bus.getSpeed());
+            bus.setArrivaltime(arrivalTimeAtNextStop);
 
             // Passenger math
             logger.info(String.format("Bus %d reached stop %d", bus.getBusId(), stopReached.getStopId()));
@@ -336,10 +357,6 @@ public class SimulationEngine{
             resultList.add(bus.toString());
 
             addEvent(new Event(arrivalTimeAtNextStop, EventType.MOVE_BUS, bus.getBusId()));
-
-            bus.setCurrentStop(stopReached);
-            bus.setNextStopIndex(stopHeadedToIndex);
-            bus.setArrivaltime(arrivalTimeAtNextStop);
 
             iterationCount++;
         }
@@ -399,4 +416,6 @@ public class SimulationEngine{
 
         return resultList;
     }
+
+
 }
