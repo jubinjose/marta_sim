@@ -52,6 +52,21 @@ public class SimulationService {
 
         SimulationEngine engine = SimulationEngine.getInstance();
 
+        post("/ksave", (request, response) ->{
+
+            String strData  = request.body() ;
+            Map<String, String> map = getQueryMap(request.body());
+            Set<String> keys = map.keySet();
+            String strValue  ="" ;
+            for (String key : keys)
+            {
+                strValue = map.get(key) ;
+                double value = Double.parseDouble(strValue );
+                setKValue(engine,key,value);
+            }
+            return "200" ;
+        } );
+
         get("/", (request, response) -> {
             return createJsonSystemState();
         });
@@ -193,4 +208,39 @@ public class SimulationService {
         }   
         return result + "]}";
     }
+    public static Map<String, String> getQueryMap(String query)
+    {
+        String[] params = query.split("&");
+        Map<String, String> map = new HashMap<String, String>();
+        for (String param : params)
+        {
+            String name = param.split("=")[0];
+            String value = param.split("=")[1];
+            map.put(name, value);
+        }
+        return map;
+    }
+
+    public static void setKValue(SimulationEngine engine,String key, double value) {
+        switch (key) {
+            case "kspeed":
+                engine.setSysSpeed(value);
+                break;
+            case "kcapacity":
+                engine.setCapacity(value);
+                break;
+            case "kwaiting":
+                engine.setSysWaiting(value);
+                break;
+            case "kbuses":
+                engine.setSysBuses(value);
+                break;
+            case "kcombined":
+                engine.setSysCombined(value);
+                break;
+            default:
+                break;
+        }
+    }
+
 }
