@@ -4,8 +4,6 @@ import org.slf4j.LoggerFactory;
 
 public class Stop implements Cloneable{
 
-    private static final Logger logger = LoggerFactory.getLogger("");
-
     private int stopId;
     public int getStopId(){
         return stopId;
