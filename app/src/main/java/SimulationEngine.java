@@ -327,7 +327,8 @@ public class SimulationEngine{
                 stopReached.setWaitingCount(stopReached.getWaitingCount() + transfers);
             }
             else{
-                stopReached.setWaitingCount(stopReached.getWaitingCount() - (ridersDepart - transfers));
+                int peopleLeavingStop = Math.min(stopReached.getWaitingCount(), ridersDepart - transfers);
+                stopReached.setWaitingCount(stopReached.getWaitingCount() - peopleLeavingStop);
             }
             logger.info("ridersDepart: " + ridersDepart);
             logger.info("Final waiting count at stop: " + stopReached.getWaitingCount());
