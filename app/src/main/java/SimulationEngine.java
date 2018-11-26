@@ -333,6 +333,18 @@ public class SimulationEngine{
             logger.info("Actual getting off bus (transfers): " + transfers);
             bus.setRiderCount(bus.getRiderCount() - transfers); // People got off the bus
 
+            if (bus.getRiderCount()>bus.getCapacity()){
+                logger.info(String.format("Bus capacity %d is less than riders in the bus %d", 
+                bus.getCapacity(), bus.getRiderCount() ));
+                
+                int forcedOutOfBus = bus.getRiderCount() - bus.getCapacity();
+                stopReached.setWaitingCount(stopReached.getWaitingCount() + forcedOutOfBus);
+                bus.setRiderCount(bus.getCapacity());
+
+                logger.info(String.format("Re-adjusted bus's rider count to %d and stop's waiting count to %d due to above", 
+                bus.getRiderCount(), stopReached.getWaitingCount() ));
+            }
+
             int ridersOn = stopReached.getRidersOn();
             logger.info("ridersOn: " + ridersOn);
             int whoWantToGetOnBus = Math.min(stopReached.getWaitingCount(), ridersOn);
