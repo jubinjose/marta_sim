@@ -79,6 +79,12 @@ public class SimulationService {
             return createJsonRewind(Integer.parseInt(request.params(":count")));
         });
 
+        get("/getbus/:busid", (request, response) -> {
+            int busId = Integer.parseInt(request.params(":busid"));
+            Bus bus = engine.getBus(busId); ;
+            return createJsonBusModal(bus);
+        });
+
         get("/reset", (request, response) -> {
             engine.init();
             return createJsonSystemState();
@@ -118,6 +124,13 @@ public class SimulationService {
             "{\"id\":%d, \"current_stop_id\":%d, \"arrival_time\":%d, \"status\": \"%s\", \"rider_count\":%d,\"route\":%d, \"capacity\":%d, \"speed\":%d}",
             bus.getBusId(), bus.getCurrentStop().getStopId(), bus.getArrivaltime(), bus.toString(), bus.getRiderCount(), 
             bus.getRoute().getRouteId(),bus.getCapacity(),bus.getSpeed());
+    }
+
+    private static String createJsonBusModal(Bus bus){ 
+        return String.format(
+            "{\"id\":%d, \"current_stop_id\":%d, \"arrival_time\":%d, \"status\": \"%s\", \"rider_count\":%d,\"route\":%d, \"capacity\":%d, \"speed\":%d, \"routeid\":%d, \"nextstopindex\":%d}",
+            bus.getBusId(), bus.getCurrentStop().getStopId(), bus.getArrivaltime(), bus.toString(), bus.getRiderCount(), 
+            bus.getRoute().getRouteId(),bus.getCapacity(),bus.getSpeed(),  bus.getRoute().getRouteId(), bus.getNextStopIndex());
     }
 
     private static String createJsonStop(Stop stop){

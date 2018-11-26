@@ -30,6 +30,7 @@ function load_initial_data(data){
         current_stop.buslist.push(bus);
     }
 
+
     this.load_bus_dropdown(data.buses);
 }
 
@@ -271,9 +272,9 @@ $( document ).ready(function() {
             change_bus();
         });
 
-        $("#btn-update-bus").click(function() {
-            alert($("#selectBus").val());
-        });
+        //$("#btn-update-bus").click(function() {
+        //    alert($("#selectBus").val());
+        //});
         
     }, "json" );
 });

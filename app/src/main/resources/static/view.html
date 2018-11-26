@@ -44,6 +44,31 @@
             <!-- <div class="modal-footer"> -->
         </div>
     </div>
+
+    <div id="update-bus" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" id="close-bus">&times;</span>
+                    <h3>Update Bus Variables</h3>
+                </div>
+                <div class="modal-body">
+                    <table style="width 30%">
+                        <tr><th align=right>Bus Speed</th><th><input align=left type="text" name="busspeed" id="busspeed" ></th> </tr>
+                        <tr><th align=right>Bus Capacity</th><th><input align=left type="text" name="buscapacity" id="buscapacity"></th> </tr>
+                        <tr><th align=right>Bus Route</th> <th><input align=left type="text" name="busroute" id="busroute"></th></tr>
+                        <tr><th align=right>Bus Route</th> <th><select id="allroutes" align=left><option></option></select></th></tr>
+                        <tr><th align=right>Bus Stop </th><th><input align=left type="text" name="busstop" id="busstop"></th> </tr>
+                    </table>
+                    <div>
+                        <button id="btn-update" style="margin-bottom:15px">Update</button>
+                        <button id="btn-close-bus" style="margin-bottom:15px">Close</button>
+                    </div>
+                    </br>
+                </div>
+                <!-- <div class="modal-footer"> -->
+            </div>
+        </div>
 </div>
 <div id="panel-right">
     <div id="panel-right-efficiency">
@@ -75,6 +100,7 @@
 
 </div>
 <script src="scripts/update-sys.js"></script>
+<script src="scripts/update-bus.js"></script>
 <script src="scripts/main.js"></script>
 </body>
 
