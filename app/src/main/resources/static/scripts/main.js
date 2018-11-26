@@ -29,6 +29,8 @@ function load_initial_data(data){
         var current_stop = engine.stoplist.find(s => s.id === bus.current_stop_id);
         current_stop.buslist.push(bus);
     }
+
+    this.load_bus_dropdown(data.buses);
 }
 
 function update_efficiency_rewind(){
@@ -47,6 +49,18 @@ function update_efficiency_rewind(){
         rewind_count_span.show();
         rewind_count_span.text(engine.num_rewinds_possible + ' remaining');
     }
+}
+
+function load_bus_dropdown(buses) {
+    var options = []
+    for (var j = 0; j < buses.length; j++) {
+        options.push(buses[j].id)
+    }
+    
+    $('#selectBus').empty();
+    $.each(options, function(i, p) {
+        $('#selectBus').append($('<option></option>').val(p).html(p));
+    });
 }
 
 function draw_initial_ui(){
@@ -251,10 +265,14 @@ $( document ).ready(function() {
          // Hookup replay bus event handler
         $("#btn-rewind").click(function() {
             rewind();
-        });
+        }); 
 
         $("#btn-change-bus").click(function() {
             change_bus();
+        });
+
+        $("#btn-update-bus").click(function() {
+            alert($("#selectBus").val());
         });
         
     }, "json" );
