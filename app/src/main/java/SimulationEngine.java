@@ -149,7 +149,7 @@ public class SimulationEngine{
     }
 
     // Initialize the simulation from list of strings
-    // Refactored this as a seperate method to support reset of system to very beginning
+    // Re-factored this as a separate method to support reset of system to very beginning
     public void init() throws IOException, Exception{
 
         // Clear all state since we might be reusing the same instance after it completed its run
@@ -240,18 +240,20 @@ public class SimulationEngine{
 
             try{
                 Stop stop = getStop(Integer.parseInt(splitLines[0]));
-                stop.setRidersArriveHigh(Integer.parseInt(splitLines[1]));
-                stop.setRidersArriveLow(Integer.parseInt(splitLines[2]));
-                stop.setRidersOffHigh(Integer.parseInt(splitLines[3]));
-                stop.setRidersOffLow(Integer.parseInt(splitLines[4]));
-                stop.setRidersOnHigh(Integer.parseInt(splitLines[5]));
-                stop.setRidersOnLow(Integer.parseInt(splitLines[6]));
-                stop.setRidersDepartHigh(Integer.parseInt(splitLines[7]));
-                stop.setRidersDepartLow(Integer.parseInt(splitLines[8]));
+                if (stop!=null) {
+                	stop.setRidersArriveHigh(Integer.parseInt(splitLines[1]));
+                    stop.setRidersArriveLow(Integer.parseInt(splitLines[2]));
+                    stop.setRidersOffHigh(Integer.parseInt(splitLines[3]));
+                    stop.setRidersOffLow(Integer.parseInt(splitLines[4]));
+                    stop.setRidersOnHigh(Integer.parseInt(splitLines[5]));
+                    stop.setRidersOnLow(Integer.parseInt(splitLines[6]));
+                    stop.setRidersDepartHigh(Integer.parseInt(splitLines[7]));
+                    stop.setRidersDepartLow(Integer.parseInt(splitLines[8]));
+                }
             }
             catch(Exception e){
                  // Bad data in rider file
-                 throw new Exception(String.format("Bad data in rider file:%n%s", line), e);
+                 throw new Exception(String.format("Bad data in rider file:%n%s%n", line), e);
             }
         }
     }

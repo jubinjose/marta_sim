@@ -1,5 +1,3 @@
-import spark.Route;
-
 public class Bus implements Cloneable{
 
     private int busId;
