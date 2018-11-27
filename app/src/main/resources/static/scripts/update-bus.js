@@ -8,33 +8,37 @@ var bus_btn = document.getElementById("btn-update-bus");
 var bus_span = document.getElementById("close-bus");
 //var span = document.getElementsByClassName("close-bus")[0];
 
+var route_stops = {}; 
+var selectedBusId;
+
 // When the user clicks on the button, open the modal 
 bus_btn.onclick = function() {
-    let selectedBusId = $("#selectBus").val();
-    load_routes_dropdown();
+    selectedBusId = $("#selectBus").val();
     get_bus(selectedBusId);
-}
-
-function load_routes_dropdown(routes) {
-    var options = [1, 2, 3];
-    //for (var j = 0; j < routes.length; j++) {
-    //    options.push(buses[j].id)
-    //}
-    
-    $('#allroutes').empty();
-    $.each(options, function(i, p) {
-        $('#allroutes').append($('<option></option>').val(p).html(p));
-    });
+    $("#allroutesrow").toggle(false);   
+    $("#routestoprow").hide(); 
 }
 
 function get_bus(bus_id){
     $.get( "/getbus/" + bus_id, function( data ) {
+       
         bus_modal.style.display = "block";
         document.getElementById("busspeed").value = data.speed;
         document.getElementById("buscapacity").value = data.capacity;
-        document.getElementById("busroute").value = data.routeid;
-        document.getElementById("busstop").value = data.nextstopindex;
+        //document.getElementById("busroute").value = data.routeid;
+        //document.getElementById("busstop").value = data.nextstopindex;
+
+        var options_route = [];
         
+        for (var i = 0; i < data.routes.length; i++) {
+            options_route.push(data.routes[i].id);
+            //let stop = { id:data.routes[i].id, stops:data.routes[i].stops };
+            route_stops[data.routes[i].id] = data.routes[i].stops;
+        }
+        $('#allroutes').empty();
+        $.each(options_route, function(i, p) {
+            $('#allroutes').append($('<option></option>').val(p).html(p));
+        });
     }, "json" );
 }
 
@@ -57,7 +61,30 @@ function isNumber(n) {
 }
 
 $("#btn-update").click(function() {
-       alert("Save");
+
+    let updatedSpeed = document.getElementById("busspeed").value;
+    let updatedCapacity = document.getElementById("buscapacity").value;
+    let updatedRouteId = $("#allroutes").val();
+    let updatedRouteStopId = $("#routestops").val();
+
+    //alert("selectedBusId: " + selectedBusId);
+    //alert("updatedSpeed: " + updatedSpeed);
+    //alert("updatedCapacity: " + updatedCapacity);
+    //alert("updatedRouteId: " + updatedRouteId);
+    //alert("updatedRouteStopId: " + updatedRouteStopId);
+
+    var postdata = {};
+    postdata.busid = selectedBusId;
+    postdata.speed = updatedSpeed;
+    postdata.capacity = updatedCapacity;
+    postdata.route = updatedRouteId;
+    postdata.stopindex = updatedRouteStopId;
+
+    $.post("/changebus", postdata)
+    .done(function( data ) {
+        console.log("post success");
+    });
+       
 });
 
 $("#btn-close-bus").click(function() {
@@ -65,3 +92,17 @@ $("#btn-close-bus").click(function() {
        var bus_modal = document.getElementById('update-bus');
        bus_modal.style.display = "none";
 });
+
+$('#changeroute').click(function() {
+    $("#allroutesrow").toggle(this.checked);
+});
+
+$("#allroutes").change(function() {
+    $("#routestoprow").show(); 
+    let selectedRouteId = $("#allroutes").val();
+    options_route_stops = route_stops[selectedRouteId];
+    $('#routestops').empty();
+    $.each(options_route_stops, function(i, p) {
+        $('#routestops').append($('<option></option>').val(p).html(p));
+    });
+}).change();

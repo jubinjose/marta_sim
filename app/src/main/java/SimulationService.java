@@ -84,8 +84,9 @@ public class SimulationService {
 
         get("/getbus/:busid", (request, response) -> {
             int busId = Integer.parseInt(request.params(":busid"));
-            Bus bus = engine.getBus(busId); ;
-            return createJsonBusModal(bus);
+            Bus bus = engine.getBus(busId); 
+            return createJsonBusModalViewModel(bus);
+            //return createJsonBusModal(bus);
         });
 
         get("/reset", (request, response) -> {
@@ -165,11 +166,21 @@ public class SimulationService {
             bus.getRoute().getRouteId(),bus.getCapacity(),bus.getSpeed());
     }
 
-    private static String createJsonBusModal(Bus bus){ 
-        return String.format(
-            "{\"id\":%d, \"current_stop_id\":%d, \"arrival_time\":%d, \"status\": \"%s\", \"rider_count\":%d,\"route\":%d, \"capacity\":%d, \"speed\":%d, \"routeid\":%d, \"nextstopindex\":%d}",
-            bus.getBusId(), bus.getCurrentStop().getStopId(), bus.getArrivaltime(), bus.toString(), bus.getRiderCount(), 
-            bus.getRoute().getRouteId(),bus.getCapacity(),bus.getSpeed(),  bus.getRoute().getRouteId(), bus.getNextStopIndex());
+    public static String createJsonBusModalViewModel(Bus bus){
+        
+        SimulationEngine engine = SimulationEngine.getInstance();
+
+        String json = String.format("{\"id\":%d, \"capacity\":%d, \"speed\":%d, \"current_stop_id\":%d,\"nextstopindex\":%d,  \"routeid\":%d, \"routes\":[",
+                    bus.getBusId(), bus.getCapacity(), bus.getSpeed(), bus.getCurrentStop().getStopId(), bus.getNextStopIndex(), bus.getRoute().getRouteId());
+                            
+        String csv = "";
+
+        for (BusRoute route : engine.getRoutes()) {
+            csv = csv + String.format("%s,", createJsonRoute(route));
+        }
+        csv = csv.replaceAll(",$", ""); // Remove trailing comma
+
+        return json + csv + "]}";
     }
 
     private static String createJsonStop(Stop stop){
