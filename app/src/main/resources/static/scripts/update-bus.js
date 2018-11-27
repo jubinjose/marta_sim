@@ -44,7 +44,7 @@ function get_bus(bus_id){
 
 // When the user clicks on <span> (x), close the modal
 bus_span.onclick = function() {
-    modal.style.display = "none";
+    bus_modal.style.display = "none";
 }
 
 // When the user clicks anywhere outside of the modal, close it
