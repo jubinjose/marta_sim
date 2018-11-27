@@ -279,8 +279,6 @@ public class SimulationEngine{
             int stopReachedIndex = bus.getNextStopIndex();
             Stop stopReached = route.getStopAtindex(stopReachedIndex);
 
-            bus.setCurrentStop(stopReached);
-
             // add curent state to rewind queue for rewind capability
             if (rewindStack.size()==3)  { rewindStack.removeLast(); }
             SystemState systemState = null;
@@ -292,6 +290,9 @@ public class SimulationEngine{
 
             }
             rewindStack.push(systemState);
+
+            // Update current Stop of Bus
+            bus.setCurrentStop(stopReached);
 
             // Apply bus changes and calculate next stop
 
