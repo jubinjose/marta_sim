@@ -1,15 +1,15 @@
 // Get the modal
-var modal = document.getElementById('update-bus');
+var bus_modal = document.getElementById('update-bus');
 
 // Get the button that opens the modal
-var btn = document.getElementById("btn-update-bus");
+var bus_btn = document.getElementById("btn-update-bus");
 
 // Get the <span> element that closes the modal
-var span = document.getElementById("close-bus");
+var bus_span = document.getElementById("close-bus");
 //var span = document.getElementsByClassName("close-bus")[0];
 
 // When the user clicks on the button, open the modal 
-btn.onclick = function() {
+bus_btn.onclick = function() {
     let selectedBusId = $("#selectBus").val();
     load_routes_dropdown();
     get_bus(selectedBusId);
@@ -29,7 +29,7 @@ function load_routes_dropdown(routes) {
 
 function get_bus(bus_id){
     $.get( "/getbus/" + bus_id, function( data ) {
-        modal.style.display = "block";
+        bus_modal.style.display = "block";
         document.getElementById("busspeed").value = data.speed;
         document.getElementById("buscapacity").value = data.capacity;
         document.getElementById("busroute").value = data.routeid;
@@ -39,18 +39,18 @@ function get_bus(bus_id){
 }
 
 // When the user clicks on <span> (x), close the modal
-span.onclick = function() {
+bus_span.onclick = function() {
     modal.style.display = "none";
 }
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
+    if (event.target == bus_modal) {
+        bus_modal.style.display = "none";
     }
 }
 
-modal.style.display = "none";
+bus_modal.style.display = "none";
 
 function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
@@ -62,6 +62,6 @@ $("#btn-update").click(function() {
 
 $("#btn-close-bus").click(function() {
        //console.log("Close:");
-       var modal = document.getElementById('update-bus');
-       modal.style.display = "none";
+       var bus_modal = document.getElementById('update-bus');
+       bus_modal.style.display = "none";
 });
