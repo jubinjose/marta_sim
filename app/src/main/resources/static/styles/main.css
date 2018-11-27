@@ -23,12 +23,21 @@
 #main-table td {
     /*width: auto;*/
     padding-right:15px;
+    height: 5px;
 }
 
 button {
     background-color: #fed;
     border:1px solid; 
     border-color: #696 #363 #363 #696; 
+}
+
+img {
+    width:25%;
+}
+
+hr {
+    border-top: 2px solid black;
 }
 
 #bus-buttons button { 

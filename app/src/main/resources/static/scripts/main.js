@@ -255,6 +255,11 @@ $( document ).ready(function() {
             move_bus();
         });
 
+        // Hookup rewind bus event handler
+        $("#btn-rewind").click(function() {
+            rewind();
+        }); 
+
         // Hookup reset bus event handler
         $("#btn-reset").click(function() {
             $.get( "/reset", function( data ) {
@@ -263,10 +268,10 @@ $( document ).ready(function() {
             }, "json");
         });
 
-         // Hookup replay bus event handler
-        $("#btn-rewind").click(function() {
-            rewind();
-        }); 
+        // Hookup upload files event handler
+        $("#btn-upload").click(function() {
+            window.location.replace("./upload.html");
+        });
 
         $("#btn-change-bus").click(function() {
             change_bus();

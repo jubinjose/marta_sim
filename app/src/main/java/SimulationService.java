@@ -140,9 +140,13 @@ public class SimulationService {
                 }
             }
 
-            engine.initFromData(setupData, riderData);
-            return createJsonSystemState();
-
+            try{
+                engine.initFromData(setupData, riderData);
+                return "Data loaded. Click <a href='./view.html'>here</a> to view engine";
+            }
+            catch(Exception ex){
+                return "Failed to initialize";
+            }
         });
 
     }

@@ -7,7 +7,7 @@ class Stop {
     }
 
     get_display_info(){
-        return "id: " + this.id + "<br>name : " + this.name + "<br>waiting : " + this.waiting_count;
+        return this.name + " [" + this.id + "]<br>" + "waiting : " + this.waiting_count;
     }
     
 }
