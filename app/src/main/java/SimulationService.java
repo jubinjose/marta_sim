@@ -1,7 +1,10 @@
+import java.awt.List;
 import java.io.*;
 import static spark.Spark.*;
 import java.util.*;
 import java.util.stream.*;
+
+import javax.servlet.MultipartConfigElement;
 
 public class SimulationService {
 
@@ -108,6 +111,38 @@ public class SimulationService {
             }
 
             return createJsonBus(bus);
+        });
+
+        post("/upload", (request, response) -> {
+
+            request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+
+            ArrayList<String> setupData = new ArrayList<String>();
+            ArrayList<String> riderData = new ArrayList<String>();
+
+            try (InputStream input = request.raw().getPart("setupfile").getInputStream()) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(input));
+                
+                String line = null;
+                
+                while ((line = br.readLine()) != null) {
+                    setupData.add(line);
+                }
+            }
+
+            try (InputStream input = request.raw().getPart("riderfile").getInputStream()) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(input));
+                
+                String line = null;
+                
+                while ((line = br.readLine()) != null) {
+                    riderData.add(line);
+                }
+            }
+
+            engine.initFromData(setupData, riderData);
+            return createJsonSystemState();
+
         });
 
     }

@@ -143,8 +143,13 @@ public class SimulationEngine{
 
     // Initialize the simulation from input files
     public void initFromFile(String setupFile, String riderFile) throws IOException, Exception{
-        this.initialSetupData = Files.readAllLines(Paths.get(setupFile));
-        this.initialRiderData = Files.readAllLines(Paths.get(riderFile));
+        initFromData(Files.readAllLines(Paths.get(setupFile)),Files.readAllLines(Paths.get(riderFile)));
+    }
+
+    // Initialize the simulation from setup and rider data passed as List of strings
+    public void initFromData(List<String> setupData, List<String> riderData) throws IOException, Exception{
+        this.initialSetupData = setupData;
+        this.initialRiderData = riderData;
         init();
     }
 
