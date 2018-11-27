@@ -19,7 +19,7 @@
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 400px;
 }
 
 
@@ -31,7 +31,9 @@
 }
 
 /* Modal Body */
-.modal-body {padding: 2px 16px;}
+.modal-body {
+    padding: 2px 16px;
+}
 
 
 /* Add Animation */
