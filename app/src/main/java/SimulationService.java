@@ -99,13 +99,17 @@ public class SimulationService {
             int busId = Integer.parseInt(request.queryParams("busid"));
             int speed = Integer.parseInt(request.queryParams("speed"));
             int capacity = Integer.parseInt(request.queryParams("capacity"));
-            String routeId = request.queryParams("route");
-            String stopIndex = request.queryParams("stopindex");
+            int routechanged = Integer.parseInt(request.queryParams("routechanged"));
+        
+            //String routeId = request.queryParams("route");
+            //String stopIndex = request.queryParams("stopindex");
 
             Bus bus = null;
 
-            if (routeId!=null){
-                bus = engine.changeBus(busId, speed, capacity, Integer.parseInt(routeId), Integer.parseInt(stopIndex));
+            if (routechanged==1){
+                int routeId = Integer.parseInt(request.queryParams("route"));
+                int stopIndex = Integer.parseInt(request.queryParams("stopindex"));
+                bus = engine.changeBus(busId, speed, capacity, routeId, stopIndex);
             }
             else{
                 bus = engine.changeBus(busId, speed, capacity);

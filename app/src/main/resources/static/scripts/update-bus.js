@@ -15,8 +15,8 @@ var selectedBusId;
 bus_btn.onclick = function() {
     selectedBusId = $("#selectBus").val();
     get_bus(selectedBusId);
-    $("#allroutesrow").toggle(false);   
-    $("#routestoprow").hide(); 
+    $("#allroutesrow").toggle(false); 
+    $("#routestoprow").toggle(false);   
 }
 
 function get_bus(bus_id){
@@ -32,12 +32,18 @@ function get_bus(bus_id){
         
         for (var i = 0; i < data.routes.length; i++) {
             options_route.push(data.routes[i].id);
-            //let stop = { id:data.routes[i].id, stops:data.routes[i].stops };
             route_stops[data.routes[i].id] = data.routes[i].stops;
         }
         $('#allroutes').empty();
         $.each(options_route, function(i, p) {
             $('#allroutes').append($('<option></option>').val(p).html(p));
+        });
+
+        // a bit hacky but should  work 
+        let options_firstroute_stops = route_stops[data.routes[0].id];
+        $('#routestops').empty();
+        $.each(options_firstroute_stops, function(i, p) {
+            $('#routestops').append($('<option></option>').val(p).html(p));
         });
     }, "json" );
 }
@@ -66,19 +72,18 @@ $("#btn-update").click(function() {
     let updatedCapacity = document.getElementById("buscapacity").value;
     let updatedRouteId = $("#allroutes").val();
     let updatedRouteStopId = $("#routestops").val();
-
-    //alert("selectedBusId: " + selectedBusId);
-    //alert("updatedSpeed: " + updatedSpeed);
-    //alert("updatedCapacity: " + updatedCapacity);
-    //alert("updatedRouteId: " + updatedRouteId);
-    //alert("updatedRouteStopId: " + updatedRouteStopId);
-
+    let routechanged = $("#changeroute").is(':checked') ? 1 : 0;
+    
     var postdata = {};
     postdata.busid = selectedBusId;
     postdata.speed = updatedSpeed;
     postdata.capacity = updatedCapacity;
-    postdata.route = updatedRouteId;
-    postdata.stopindex = updatedRouteStopId;
+    postdata.routechanged = routechanged;
+
+    if(routechanged == 1){
+        postdata.route = updatedRouteId;
+        postdata.stopindex = updatedRouteStopId;
+    }
 
     $.post("/changebus", postdata)
     .done(function( data ) {
@@ -95,10 +100,10 @@ $("#btn-close-bus").click(function() {
 
 $('#changeroute').click(function() {
     $("#allroutesrow").toggle(this.checked);
+    $("#routestoprow").toggle(this.checked);
 });
 
 $("#allroutes").change(function() {
-    $("#routestoprow").show(); 
     let selectedRouteId = $("#allroutes").val();
     options_route_stops = route_stops[selectedRouteId];
     $('#routestops').empty();
