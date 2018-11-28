@@ -192,7 +192,7 @@ public class SimulationService {
     }
 
     private static String createJsonRoute(BusRoute route){
-        return String.format("{\"id\":%d,\"stops\":[%s]}", route.getRouteId(), 
+        return String.format("{\"id\":%d,\"name\":\"%s\",\"stops\":[%s]}", route.getRouteId(), route.getName(),
                 route.getStopList().stream()
                 .map(s -> s.getStopId() + "")
                 .collect(Collectors.joining(",")));

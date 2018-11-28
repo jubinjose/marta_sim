@@ -11,12 +11,14 @@ function load_initial_data(data){
     engine.efficiency = data.efficiency;
     engine.num_rewinds_possible = data.num_rewinds_possible;
     
-    engine.routes = data.routes;
+    engine.routelist = data.routes;
 
     for (var j = 0; j < data.stops.length; j++) {
+
         let obj = data.stops[j];
         let stop =   new Stop(obj.id, obj.name, obj.waiting);
         engine.stoplist.push(stop);
+
     }
     
     for (var j = 0; j < data.buses.length; j++) {
@@ -26,7 +28,7 @@ function load_initial_data(data){
         let bus =  new Bus(obj.id, obj.current_stop_id, obj.arrival_time, obj.status, obj.rider_count, obj.route_id, obj.capacity, obj.speed);
         engine.buslist.push(bus);
     
-        var current_stop = engine.stoplist.find(s => s.id === bus.current_stop_id);
+        var current_stop = engine.get_stop(bus.current_stop_id);
         current_stop.buslist.push(bus);
     }
 
@@ -129,9 +131,9 @@ function move_bus(){
         if (data.move === true){
             
             // find bus that moved
-            let bus = engine.buslist.find(b => b.id === data.bus.id);
+            let bus = engine.get_bus(data.bus.id);
 
-            let prev_stop = engine.stoplist.find(s => s.id === bus.current_stop_id);
+            let prev_stop = engine.get_stop(bus.current_stop_id);
 
             // remove bus from previous stop object's buslist
             let prev_stop_bus_index = prev_stop.buslist.findIndex(b => b.id === bus.id);
@@ -153,7 +155,7 @@ function move_bus(){
             bus.speed = data.bus.speed;
 
             // Find the stop bus reached
-            let stop = engine.stoplist.find(s => s.id === bus.current_stop_id);
+            let stop = engine.get_stop(bus.current_stop_id);
 
             stop.waiting_count = data.waiting_at_stop;
             stop.buslist.push(bus); // add bus to the stop it reached
@@ -181,12 +183,12 @@ function rewind(){
             let rewind_result = data.rewinds[i];
 
             // Find bus that moved
-            let bus = engine.buslist.find(b => b.id === rewind_result.bus.id);
+            let bus = engine.get_bus(rewind_result.bus.id);
 
             // Find the stop bus was at before the rewind
-            let stop_to_remove_bus = engine.stoplist.find(s => s.id === bus.current_stop_id); // or rewind_result.stop.id since bus.current_stop_id should be same as bus.current_stop_id as long as UI stayed in sync
+            let stop_to_remove_bus = engine.get_stop(bus.current_stop_id); // or rewind_result.stop.id since bus.current_stop_id should be same as bus.current_stop_id as long as UI stayed in sync
             // Find the stop where bus has to be taken back to
-            let stop_to_add_bus = engine.stoplist.find(s => s.id === rewind_result.bus.current_stop_id);
+            let stop_to_add_bus = engine.get_stop(rewind_result.bus.current_stop_id);
 
              
             // update stop with waiting count
@@ -221,20 +223,6 @@ function rewind(){
             update_efficiency_rewind();
         }
     }, "json" );
-}
-
-function change_bus(){
-    var postdata = {};
-    postdata.busid = 67;
-    postdata.speed = 10;
-    postdata.capacity = 100;
-    postdata.route = 56;
-    postdata.stopindex = 2;
-
-    $.post("/changebus", postdata)
-    .done(function( data ) {
-        console.log("post successsssssssss");
-    });
 }
 
 var engine;
@@ -272,15 +260,6 @@ $( document ).ready(function() {
         $("#btn-upload").click(function() {
             window.location.replace("./upload.html");
         });
-
-        $("#btn-change-bus").click(function() {
-            change_bus();
-        });
-
-        //$("#btn-update-bus").click(function() {
-        //    alert($("#selectBus").val());
-        //});
-        
     }, "json" );
 });
 

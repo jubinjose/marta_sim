@@ -12,4 +12,16 @@ class Engine {
 
         this.efficiency = 0;
     }
+
+    get_bus(busId){
+        return this.buslist.find(b => b.id == busId);
+    }
+
+    get_stop(stopId){
+        return this.stoplist.find(s => s.id == stopId);
+    }
+
+    get_route(routeId){
+        return this.routelist.find(r => r.id == routeId);
+    }
 }
