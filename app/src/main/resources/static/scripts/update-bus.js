@@ -13,7 +13,9 @@ function get_bus(bus_id) {
 
         var $dropdown = $("#allroutes");
         $dropdown.empty();
+        console.log(engine.routelist);
         $.each(engine.routelist, function () {
+            console.log(engine.get_route(this.id))
             $dropdown.append($("<option />").val(this.id).text(this.name + ' [' + this.id + ']'));
         });
 
@@ -34,6 +36,8 @@ function load_stops(){
     }
 }
 
+
+
 // Get the modal
 var bus_modal = document.getElementById('update-bus');
 
@@ -43,6 +47,9 @@ var bus_btn = document.getElementById("btn-update-bus");
 // Get the <span> element that closes the modal
 var bus_span = document.getElementById("close-bus");
 //var span = document.getElementsByClassName("close-bus")[0];
+
+// uncheck by default 
+$('#changeroute').prop('checked', false); 
 
 var route_stops = {};
 var selectedBusId;
@@ -91,13 +98,17 @@ $("#btn-update").click(function () {
 
     $.post("/changebus", postdata)
         .done(function (data) {
-            console.log("post success");
+            alert("Bus update successful!");
+            // uncheck it  
+            $('#changeroute').prop('checked', false); 
+            // close the modal 
+            bus_modal.style.display = "none";
         });
-
 });
 
-$("#btn-close-bus").click(function () {
-    //console.log("Close:");
+$("#btn-close-bus").click(function () {    
+    // uncheck it  
+    $('#changeroute').prop('checked', false); 
     var bus_modal = document.getElementById('update-bus');
     bus_modal.style.display = "none";
 });
