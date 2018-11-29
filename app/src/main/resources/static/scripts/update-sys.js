@@ -74,6 +74,7 @@ $("#btn-save").click(function() {
         },
        function(data, status){
            //alert("Data: " + data + "\nStatus: " + status);
+           $("#efficiency").text(data);
        });
 
        engine.kspeed = kspeedvalue ;
