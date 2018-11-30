@@ -67,7 +67,9 @@ public class SimulationService {
                 double value = Double.parseDouble(strValue );
                 setKValue(engine,key,value);
             }
-            return "200" ;
+            double efficiency = engine.calcSystemEfficiency() ;
+            //return String.format("{efficiency:%s}", efficiency ) ;
+            return String.format("%.1f", efficiency ) ;
         } );
 
         get("/", (request, response) -> {
