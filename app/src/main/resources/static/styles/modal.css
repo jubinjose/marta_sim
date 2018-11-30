@@ -19,15 +19,13 @@
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 400px;
 }
-
-
 /* Modal Header */
 .modal-header {
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
+    margin-bottom:10px;
 }
 
 /* Modal Body */
@@ -41,3 +39,40 @@
     from {top: 300px; opacity: 0}
     to {top: -300; opacity: 1}
 }
+
+.modal-button-row{
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+.msg-success{
+    margin-bottom:10px;
+    font-weight: bold;
+    color:green;
+}
+
+.msg-fail{
+    margin-bottom:10px;
+    font-weight: bold;
+    color:red;
+}
+
+#update-sys .modal-content{
+    width: 300px;;
+}
+#update-sys table{
+    width: auto;
+}
+
+#update-bus .modal-content{
+    width: 600px;
+}
+#update-bus table{
+    width: auto;
+}
+
+
+
+
+
+

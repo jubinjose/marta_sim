@@ -103,9 +103,6 @@ public class SimulationService {
             int capacity = Integer.parseInt(request.queryParams("capacity"));
             int routechanged = Integer.parseInt(request.queryParams("routechanged"));
         
-            //String routeId = request.queryParams("route");
-            //String stopIndex = request.queryParams("stopindex");
-
             Bus bus = null;
 
             if (routechanged==1){

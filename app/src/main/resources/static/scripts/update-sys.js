@@ -10,12 +10,14 @@ var span = document.getElementsByClassName("close")[0];
 // When the user clicks on the button, open the modal 
 btn.onclick = function() {
     modal.style.display = "block";
-    document.getElementById("kSysspeed").value = engine.kspeed;
-    document.getElementById("kSyscapacity").value = engine.kcapacity ;
-    document.getElementById("kSyswaiting").value = engine.kwaiting;
-    document.getElementById("kSysbuses").value = engine.kbuses;
-    document.getElementById("kSyscombined").value = engine.kcombined;
+    
+    $("#kSysspeed").val(engine.kspeed);
+    $("#kSyscapacity").val(engine.kcapacity);
+    $("#kSyswaiting").val(engine.kwaiting);
+    $("#kSysbuses").val(engine.kbuses);
+    $("#kSyscombined").val(engine.kcombined);
 
+    $("#msg-sys-change").hide();
 }
 
 // When the user clicks on <span> (x), close the modal
@@ -36,61 +38,97 @@ function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-function getKValue(data,area){
-       var kvalue = document.getElementById(data).value;
-       if ( !isNumber(kvalue) )
+function validateNumber(num){
+       if ( !isNumber(num) )
        {
-            window.alert("Please enter value float value for "+area )
-            return null ;
+            return {"error":"Please enter a numeric value for "};
        }
-       return kvalue ;
+       else{
+           return {};
+       }
 }
 
 $("#btn-save").click(function() {
 
-       var kspeedvalue = getKValue('kSysspeed','kspeed') ;
-       if ( kspeedvalue == null ) return ;
+    let errors = [];
 
-       var kcapacityvalue = getKValue('kSyscapacity','kcapacity') ;
-       if ( kcapacityvalue == null ) return ;
+    let kspeedvalue = $("#kSysspeed").val();
+    let validation_result = validateNumber(kspeedvalue);
+    if (validation_result.error) {
+        errors.push(validation_result.error + 'kspeed');
+    }
 
-       var kwaitingvalue = getKValue('kSyswaiting','kwaiting') ;
-       if ( kwaitingvalue ==null ) return ;
+    let kcapacityvalue = $("#kSyscapacity").val();
+    validation_result = validateNumber(kcapacityvalue);
+    if (validation_result.error) {
+        errors.push(validation_result.error + 'kcapacity');
+    }
 
-       var kbusesvalue = getKValue('kSysbuses','kbuses') ;
-       if ( kbusesvalue == null ) return ;
+    let kwaitingvalue = $("#kSyswaiting").val();
+    validation_result = validateNumber(kwaitingvalue);
+    if (validation_result.error) {
+        errors.push(validation_result.error + 'kwaiting');
+    }
 
-       var kcombinedvalue = getKValue('kSyscombined','kcombined') ;
-       if ( kcombinedvalue == null ) return ;
+    let kbusesvalue = $("#kSysbuses").val();
+    validation_result = validateNumber(kbusesvalue);
+    if (validation_result.error) {
+        errors.push(validation_result.error + 'kbuses');
+    }
 
-       //console.log("Save:");
-       $.post("/ksave",
-       {
-          kspeed: kspeedvalue,
-          kcapacity: kcapacityvalue,
-          kwaiting: kwaitingvalue ,
-          kbuses: kbusesvalue ,
-          kcombined: kcombinedvalue
-        },
-       function(data, status){
-           //alert("Data: " + data + "\nStatus: " + status);
-           $("#efficiency").text(data);
-       });
+    let kcombinedvalue = $("#kSyscombined").val();
+    validation_result = validateNumber(kcombinedvalue);
+    if (validation_result.error) {
+        errors.push(validation_result.error + 'kcombined');
+    }
 
-       engine.kspeed = kspeedvalue ;
-       engine.kcapacity = kcapacityvalue ;
-       engine.kwaiting = kwaitingvalue ;
-       engine.kbuses = kbusesvalue ;
-       engine.kcombined = kcombinedvalue;
-       $("#kspeed").text(engine.kspeed);
-       $("#kcapacity").text(engine.kcapacity);
-       $("#kwaiting").text(engine.kwaiting);
-       $("#kbuses").text(engine.kbuses);
-       $("#kcombined").text(engine.kcombined);
+    if (errors.length >0){
+        
+        let str = "";
+        errors.forEach(function(error){
+            str += '<li>' + error + '</li>' 
+        });
+
+        $('#msg-sys-change').html('<p>There were some errors</p>')
+                .append('<ul>' + str + '</ul>'); 
+
+        $('#msg-sys-change').removeClass('msg-success');
+        $('#msg-sys-change').addClass('msg-fail');
+        $('#msg-sys-change').show();
+        return;
+    }
+
+    $.post("/ksave",
+    {
+        kspeed: kspeedvalue,
+        kcapacity: kcapacityvalue,
+        kwaiting: kwaitingvalue ,
+        kbuses: kbusesvalue ,
+        kcombined: kcombinedvalue
+    },
+    function(data, status){
+        $("#efficiency").text(data);
+    });
+
+    engine.kspeed = kspeedvalue ;
+    engine.kcapacity = kcapacityvalue ;
+    engine.kwaiting = kwaitingvalue ;
+    engine.kbuses = kbusesvalue ;
+    engine.kcombined = kcombinedvalue;
+
+    $("#kspeed").text(engine.kspeed);
+    $("#kcapacity").text(engine.kcapacity);
+    $("#kwaiting").text(engine.kwaiting);
+    $("#kbuses").text(engine.kbuses);
+    $("#kcombined").text(engine.kcombined);
+
+    $('#msg-sys-change').removeClass('msg-fail');
+    $('#msg-sys-change').addClass('msg-success');
+    $("#msg-sys-change").text('System update successful');
+    $("#msg-sys-change").show();
 });
 
 $("#btn-close").click(function() {
-       //console.log("Close:");
        var modal = document.getElementById('update-sys');
        modal.style.display = "none";
 });
