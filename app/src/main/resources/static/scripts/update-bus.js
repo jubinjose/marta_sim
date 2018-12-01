@@ -1,8 +1,8 @@
-function isNumber(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
+function isPositiveInteger(n) {
+    return $.isNumeric(n) && Math.floor(n) == +n && n>=0;
 }
 
-function get_bus(bus_id) {
+function load_bus_details(bus_id) {
 
     var bus = engine.get_bus(bus_id);
 
@@ -21,6 +21,7 @@ function get_bus(bus_id) {
 
         load_stops();
 
+        $("#msg-bus-change").hide();
         bus_modal.style.display = "block";
     }
 }
@@ -56,8 +57,7 @@ var selectedBusId;
 
 // When the user clicks on the button, open the modal 
 bus_btn.onclick = function () {
-    selectedBusId = $("#selectBus").val();
-    get_bus(selectedBusId);
+    load_bus_details($("#selectBus").val());
     $("#allroutesrow").toggle(false);
     $("#routestoprow").toggle(false);
 }
@@ -79,11 +79,38 @@ bus_modal.style.display = "none";
 
 $("#btn-update").click(function () {
 
-    let updatedSpeed = document.getElementById("busspeed").value;
-    let updatedCapacity = document.getElementById("buscapacity").value;
+    let selectedBusId = $("#selectBus").val();
+    let updatedSpeed = $("#busspeed").val().trim();
+    let updatedCapacity = $("#buscapacity").val().trim();
     let updatedRouteId = $("#allroutes").val();
     let updatedRouteStopId = $("#routestops").val();
     let routechanged = $("#changeroute").is(':checked') ? 1 : 0;
+
+    let errors = [];
+
+    if (!isPositiveInteger(updatedSpeed)){
+        errors.push('Speed has to be a non negative integer');
+    }
+
+    if (!isPositiveInteger(updatedCapacity)){
+        errors.push('Capacity has to be a non negative integer');
+    }
+
+    if (errors.length >0){
+        
+        let str = "";
+        errors.forEach(function(error){
+            str += '<li>' + error + '</li>' 
+        });
+
+        $('#msg-bus-change').html('<p>There were some errors</p>')
+                .append('<ul>' + str + '</ul>'); 
+
+        $('#msg-bus-change').removeClass('msg-success');
+        $('#msg-bus-change').addClass('msg-fail');
+        $('#msg-bus-change').show();
+        return;
+    }
 
     var postdata = {};
     postdata.busid = selectedBusId;
@@ -98,11 +125,13 @@ $("#btn-update").click(function () {
 
     $.post("/changebus", postdata)
         .done(function (data) {
-            alert("Bus update successful!");
+            $('#msg-bus-change').removeClass('msg-fail');
+            $('#msg-bus-change').addClass('msg-success');
+            $("#msg-bus-change").text('Bus update successful');
+            $("#msg-bus-change").show();
             // uncheck it  
             $('#changeroute').prop('checked', false); 
             // close the modal 
-            bus_modal.style.display = "none";
         });
 });
 

@@ -17,35 +17,52 @@
 </head>
 
 <body>
-<div id="panel-left">
+    <div id="panel-left">
 
-    <table id="main-table">
+        <table id="main-table">
 
-    </table>
-    <div id="update-sys" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="close">&times;</span>
-                <h3>Update System Variables</h3>
+        </table>
+        <div id="update-sys" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close">&times;</span>
+                    <h3>Update System Variables</h3>
+                </div>
+                <div class="modal-body">
+                    <table>
+                        <tr>
+                            <td>kspeed</td>
+                            <td><input type="number" step="0.01" id="kSysspeed"></td>
+                        </tr>
+                        <tr>
+                            <td>kcapacity</td>
+                            <td><input type="number" step="0.01" id="kSyscapacity"></td>
+                        </tr>
+                        <tr>
+                            <td>kwaiting</td>
+                            <td><input type="number" step="0.01" id="kSyswaiting"></td>
+                        </tr>
+                        <tr>
+                            <td>kbuses</td>
+                            <td><input type="number" step="0.01" id="kSysbuses"></td>
+                        </tr>
+                        <tr>
+                            <td>kcombined</td>
+                            <td><input type="number" step="0.01" id="kSyscombined"></td>
+                        </tr>
+                    </table>
+                    <div class="modal-button-row">
+                        <button id="btn-save" style="margin-bottom:15px">Update</button>
+                        <button id="btn-close" style="margin-bottom:15px">Close</button>
+                    </div>
+                    <div id="msg-sys-change" class="msg-success"></div>
+                </div>
+                <!-- <div class="modal-footer"> -->
             </div>
-            <div class="modal-body">
-                <table style="width:30px">
-                    <tr><th align=right>kspeed</th><th><input align=left type="text" name="kspeed" id="kSysspeed" ></th> </tr>
-                    <tr><th align=right>kcapacity</th><th><input align=left type="text" name="kcapacity" id="kSyscapacity"></th> </tr>
-                    <tr><th align=right>kwaiting</th> <th><input align=left type="text" name="kwaiting" id="kSyswaiting"></th></tr>
-                    <tr><th align=right>kbuses</th><th><input align=left type="text" name="kbuses" id="kSysbuses"></th> </tr>
-                    <tr><th align=right>kcombined</th><th><input align=left type="text" name="kcombined" id="kSyscombined"></th> </tr>
-                </table>
-                <div><button id="btn-save" style="margin-bottom:15px">Update</button>
-                    <button id="btn-close" style="margin-bottom:15px">Close</button></div>
-                </br>
-            </div>
-            <!-- <div class="modal-footer"> -->
         </div>
-    </div>
 
-    <div id="update-bus" class="modal">
+        <div id="update-bus" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
                 <div class="modal-header">
@@ -53,71 +70,77 @@
                     <h3>Update Bus Variables</h3>
                 </div>
                 <div class="modal-body">
-                    <table style="width:30px">
+                    <table>
                         <tr>
-                            <th align=right>Bus Speed</th>
-                            <th><input align=left type="number" name="busspeed" id="busspeed" ></th> 
+                            <td>Bus Speed</td>
+                            <td><input type="number" min="0" step="1" id="busspeed"></td>
                         </tr>
                         <tr>
-                            <th align=right>Bus Capacity</th>
-                            <th><input align=left type="number" name="buscapacity" id="buscapacity"></th> 
+                            <td>Bus Capacity</td>
+                            <td><input type="number" min="0" step="1" id="buscapacity"></td>
                         </tr>
                         <tr>
-                            <th align=right>Change Bus Route?</th>
-                            <th><input type="checkbox"  name="changeroute" id="changeroute" /></th>
+                            <td>Change Bus Route?</td>
+                            <td><input type="checkbox" id="changeroute" /></td>
                         </tr>
                         <tr id="allroutesrow">
-                            <th align=right>New Bus Route</th> 
-                            <th><select id="allroutes"><option></option></select></th>
+                            <td>New Bus Route</td>
+                            <td><select id="allroutes">
+                                    <option></option>
+                                </select>
+                            </td>
                         </tr>
                         <tr id="routestoprow">
-                            <th align=right>Bus Stop On Route</th>
-                            <th><select id="routestops"><option></option></select></th>
+                            <td>Bus Stop On Route</td>
+                            <td>
+                                <select id="routestops">
+                                    <option></option>
+                                </select>
+                            </td>
                         </tr>
                     </table>
-                    <div>
-                        <button id="btn-update" style="margin-bottom:15px">Update</button>
-                        <button id="btn-close-bus" style="margin-bottom:15px">Close</button>
+                    <div class="modal-button-row">
+                        <button id="btn-update">Update</button>
+                        <button id="btn-close-bus">Close</button>
                     </div>
-                    </br>
+                    <div id="msg-bus-change" class="msg-success"></div>
                 </div>
-                <!-- <div class="modal-footer"> -->
             </div>
         </div>
-</div>
-<div id="panel-right">
-    <div id="panel-right-efficiency">
-        <div>System Efficiency - <span id="efficiency"></span></div>
     </div>
-    <hr />
-    <div id="panel-right-system">
-        <div>kSpeed - <span id="kspeed"></span></div>
-        <div>kCapacity - <span id="kcapacity"></span></div>
-        <div>kWaiting - <span id="kwaiting"></span></div>
-        <div>kBuses - <span id="kbuses"></span></div>
-        <div>kCombined - <span id="kcombined"></span></div>
-    </div>
-    <button id="btn-update-sys">Update System Parameters </button>
-    <hr/>
-    <div id="panel-right-system">
-        <span>Select Bus ID: </span>
-        <select id="selectBus">
-            <option></option>
-        </select>
-    </div>
-    <button id="btn-update-bus">Update Selected Bus</button>
-    <hr/>
-    <div id="bus-buttons">
-        <div><button id="btn-move-bus">Move Bus</button></div>
-        <div><button id="btn-rewind">Rewind</button><span id="rewinds-possible"></span></div>
-        <div><button id="btn-reset">Reset System</button></div>
-        <div><button id="btn-upload">Initialize system from files</button></div>
-    </div>
+    <div id="panel-right">
+        <div id="panel-right-efficiency">
+            <div>System Efficiency - <span id="efficiency"></span></div>
+        </div>
+        <hr />
+        <div id="panel-right-system">
+            <div>kSpeed - <span id="kspeed"></span></div>
+            <div>kCapacity - <span id="kcapacity"></span></div>
+            <div>kWaiting - <span id="kwaiting"></span></div>
+            <div>kBuses - <span id="kbuses"></span></div>
+            <div>kCombined - <span id="kcombined"></span></div>
+        </div>
+        <button id="btn-update-sys">Update System Parameters </button>
+        <hr />
+        <div id="panel-right-system">
+            <span>Select Bus ID: </span>
+            <select id="selectBus">
+                <option></option>
+            </select>
+        </div>
+        <button id="btn-update-bus">Update Selected Bus</button>
+        <hr />
+        <div id="bus-buttons">
+            <div><button id="btn-move-bus">Move Bus</button></div>
+            <div><button id="btn-rewind">Rewind</button><span id="rewinds-possible"></span></div>
+            <div><button id="btn-reset">Reset System</button></div>
+            <div><button id="btn-upload">Initialize system from files</button></div>
+        </div>
 
-</div>
-<script src="scripts/update-sys.js"></script>
-<script src="scripts/update-bus.js"></script>
-<script src="scripts/main.js"></script>
+    </div>
+    <script src="scripts/update-sys.js"></script>
+    <script src="scripts/update-bus.js"></script>
+    <script src="scripts/main.js"></script>
 </body>
 
 </html>
