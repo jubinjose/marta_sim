@@ -256,10 +256,10 @@ $( document ).ready(function() {
             }, "json");
         });
 
-        // Hookup upload files event handler
-        $("#btn-upload").click(function() {
-            window.location.replace("./upload.html");
-        });
+        // // Hookup upload files event handler
+        // $("#btn-initialize").click(function() {
+        //     window.location.replace("./upload.html");
+        // });
     }, "json" );
 });
 

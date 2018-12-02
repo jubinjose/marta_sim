@@ -1,10 +1,13 @@
 import java.io.IOException;
-import java.util.*;
-
-import org.slf4j.Logger;
-
 import java.nio.file.*;
+import java.util.*;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+// This is the heart of the application. 
+// It holds all domain objects (Bus, Stop, Route, Event) etc. and is responsible for handling the main simulation logic
+// It also does many calculations like system efficiency and travel time to keep Single Responsibility Principle for Domain Objects
+// This design also plays well with inversion of control concept as in specialzied functions aren't vested in Domain objects
 
 public class SimulationEngine{
 
@@ -16,10 +19,11 @@ public class SimulationEngine{
     private EventQueue eventQueue = new EventQueue();
     private Deque<SystemState> rewindStack = new ArrayDeque<>();
 
+    // Below two are stored so as to facilitate the 'reset' functionality
     List<String> initialSetupData; // Will store all lines from input setup file
     List<String> initialRiderData; // will store all lines from input reader file
 
-    // using singleton here so the web request gets hold of this instance
+    // using singleton pattern here so that SimulationService (when it process a web request) always gets hold of the same instance of SimulationEngine
     private SimulationEngine(){};
 
     private static SimulationEngine instance;
@@ -69,29 +73,33 @@ public class SimulationEngine{
         sysCombined = val;
     }
 
-    /* Methods */
+    /* Methods to add Domain object (Bus, Stop, Route), get Domain object by ID and return all domain objects*/
     public void addBus(Bus bus){
         busMap.put(bus.getBusId(), bus);
-    }
-
-    public void addStop(Stop stop){
-        stopMap.put(stop.getStopId(), stop);
-    }
-
-    public void addRoute(BusRoute route){
-        routeMap.put(route.getRouteId(), route);
-    }
-
-    public void addEvent(Event event){
-        eventQueue.addEvent(event);
     }
 
     public Bus getBus(int busId){
         return busMap.get(busId);
     }
 
+    public Collection<Bus> getBuses(){
+        return Collections.unmodifiableCollection(busMap.values());
+    }
+
+    public void addStop(Stop stop){
+        stopMap.put(stop.getStopId(), stop);
+    }
+
     public Stop getStop(int stopId){
         return stopMap.get(stopId);
+    }
+
+    public Collection<Stop> getStops(){
+        return Collections.unmodifiableCollection(stopMap.values());
+    }
+
+    public void addRoute(BusRoute route){
+        routeMap.put(route.getRouteId(), route);
     }
 
     public BusRoute getRoute(int routeid){
@@ -102,14 +110,11 @@ public class SimulationEngine{
         return Collections.unmodifiableCollection(routeMap.values());
     }
 
-    public Collection<Stop> getStops(){
-        return Collections.unmodifiableCollection(stopMap.values());
+    public void addEvent(Event event){
+        eventQueue.addEvent(event);
     }
 
-    public Collection<Bus> getBuses(){
-        return Collections.unmodifiableCollection(busMap.values());
-    }
-
+    // Distance and Time calculations
     public double calcDistance(Stop stop1, Stop stop2){
         return 70 * Math.sqrt(Math.pow(stop1.getLatitude() - stop2.getLatitude(), 2) + Math.pow(stop1.getLongitude() - stop2.getLongitude(), 2));
     }
@@ -119,6 +124,7 @@ public class SimulationEngine{
         return 1 + ((int)dist) * 60 / speed;
     }
 
+    // System efficiency calculation
     public double calcSystemEfficiency(){
 
         double busCost = 0;
@@ -137,6 +143,7 @@ public class SimulationEngine{
 
     }
 
+    // We can only rewind as many times as there are SystemSatte entries in the rewind stack
     public int getNumberOfRewindsPossible(){
         return rewindStack.size();
     }
@@ -146,7 +153,8 @@ public class SimulationEngine{
         initFromData(Files.readAllLines(Paths.get(setupFile)),Files.readAllLines(Paths.get(riderFile)));
     }
 
-    // Initialize the simulation from setup and rider data passed as List of strings
+    // Initialize the simulation from setup and rider data passed as List of strings 
+    // Useful for batch testing against many input files
     public void initFromData(List<String> setupData, List<String> riderData) throws IOException, Exception{
         this.initialSetupData = setupData;
         this.initialRiderData = riderData;
@@ -157,6 +165,9 @@ public class SimulationEngine{
     // Re-factored this as a separate method to support reset of system to very beginning
     public void init() throws IOException, Exception{
 
+        System.out.println("\n\n");
+        logger.info("COMMAND:init");
+        
         // Clear all state since we might be reusing the same instance after it completed its run
         busMap = new HashMap<Integer,Bus>();
         stopMap = new HashMap<Integer,Stop>();
@@ -386,7 +397,8 @@ public class SimulationEngine{
 
     public String moveBus(){
         
-        logger.info("command:moveBus");
+        System.out.println("\n\n");
+        logger.info("COMMAND:moveBus");
         List<String> resultList = runSimulation(1);
 
         if (!resultList.isEmpty()){
@@ -399,7 +411,8 @@ public class SimulationEngine{
 
     public ArrayList<SystemState> rewind(int numEvents){
 
-        logger.info("command:rewind");
+        System.out.println("\n\n");
+        logger.info("COMMAND:rewind");
         ArrayList<SystemState> resultList = new ArrayList<SystemState>();
         
         while (numEvents>resultList.size()){
@@ -437,20 +450,18 @@ public class SimulationEngine{
         return resultList;
     }
 
- 
-
-    public Bus changeBus(int busId, int speed, int capacity){
-        
+    public void changeBus(int busId, int speed, int capacity){
+        System.out.println("\n\n");
+        logger.info("COMMAND:changeBus with no route change");
         Bus bus = getBus(busId);
         bus.changeBus(speed, capacity);
-        return bus;
     }
 
-    public Bus changeBus(int busId, int speed, int capacity, int routeId, int stopIndex){
-        
+    public void changeBus(int busId, int speed, int capacity, int routeId, int stopIndex){
+        System.out.println("\n\n");
+        logger.info("COMMAND:changeBus with route change");
         Bus bus = getBus(busId);
         BusRoute route = getRoute(routeId);
         bus.changeBus(speed, capacity, route, stopIndex);
-        return bus;
     }
 }

@@ -1,53 +1,72 @@
 import java.awt.List;
 import java.io.*;
-import static spark.Spark.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.*;
-
 import javax.servlet.MultipartConfigElement;
 
+import org.eclipse.jetty.client.api.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import spark.Spark;
+
+import static spark.Spark.*;
+
+
+// This class exists just so that it adds a webr equest handling wrapper around SimulationEngine (which is unaware of any web behavior)
 public class SimulationService {
+
+    private static final Logger logger = LoggerFactory.getLogger("");
 
     public static void main(String[] args) {
 
-        if (args.length<2){
-            System.out.printf("%s%n%s", "Both Input files not provided!", 
-                                "Usage: java -jar working_system.jar <path_to_scenario_file> <path_to_rider_file>");
-            return;
-        }
-
-        String setupFileStr = args[0].trim();
-        String riderFileStr = args[1].trim();
-
-        File setupFile = new File(setupFileStr);
-
-        if (!setupFile.exists() || !setupFile.isFile()) {
-            System.out.printf("Cannot find file '%s' ", setupFileStr);
-            return;
-        }
-
-        File riderFile = new File(riderFileStr);
-
-        if (!riderFile.exists() || !riderFile.isFile()) {
-            System.out.printf("Cannot find file '%s' ", riderFileStr);
+        if (args.length==1 || args.length>2){
+            logger.info(String.format("%s%n%s", "Please invoke with two arguments - setup file and rider file", 
+                                "Usage: java -cp .:lib\\* SimulationService <path_to_setup_file> <path_to_rider_file>"));
             return;
         }
 
         SimulationEngine engine = SimulationEngine.getInstance();
 
-        try{
-            engine.initFromFile(setupFileStr, riderFileStr);
-        }
-        catch(IOException ioe){
-            System.out.print("Unable to read from input files");
-            return;
-        }
-        catch(Exception e){
-            System.out.printf(e.getMessage());
-            return;
+        // If both input files are provided, then load system with that data
+        // If no input files provided, then paint a blank UI. user can always upload files from there
+        if (args.length==2){ 
+            String setupFileStr = args[0].trim();
+            String riderFileStr = args[1].trim();
+
+            File setupFile = new File(setupFileStr);
+
+            if (!setupFile.exists() || !setupFile.isFile()) {
+                logger.info(String.format("Cannot find file '%s' ", setupFileStr));
+                return;
+            }
+
+            File riderFile = new File(riderFileStr);
+
+            if (!riderFile.exists() || !riderFile.isFile()) {
+                logger.info(String.format("Cannot find file '%s' ", riderFileStr));
+                return;
+            }
+
+            try{
+                engine.initFromFile(setupFileStr, riderFileStr);
+            }
+            catch(IOException ioe){
+                logger.info("Unable to read from input files");
+                return;
+            }
+            catch(Exception e){
+                logger.info(String.format(e.getMessage()));
+                return;
+            }
         }
 
         runServer();
+        Spark.awaitInitialization();
+
+        System.out.println(String.format("%n%nStarted Simulation - Access through browser at http://%s:%d/view.html%n%n","localhost",Spark.port()));
     }
 
     public static void runServer(){
@@ -55,6 +74,48 @@ public class SimulationService {
 
         SimulationEngine engine = SimulationEngine.getInstance();
 
+        // A web request handler that returns entire system state
+        get("/", (request, response) -> {
+            return createJsonSystemState();
+        });
+
+        // Process a move bus web request and returns system efficiency along with info about bus & stop impacted by the move
+        get("/movebus", (request, response) -> {
+            return createJsonMoveBus();
+        });
+
+        // Process a rewind web request and returns system efficiency along with info about bus & stop impacted by the rewind
+        get("/rewind/:count", (request, response) -> {
+            return createJsonRewind(Integer.parseInt(request.params(":count")));
+        });
+
+        // Performs a full system reset web request to intial state after file load. Returns the full system state
+        get("/reset", (request, response) -> {
+            engine.init();
+            return createJsonSystemState();
+        });
+
+        // Process a changeBus web request 
+        post("/changebus", (request, response) -> {
+
+            int busId = Integer.parseInt(request.queryParams("busid"));
+            int speed = Integer.parseInt(request.queryParams("speed"));
+            int capacity = Integer.parseInt(request.queryParams("capacity"));
+            int routechanged = Integer.parseInt(request.queryParams("routechanged"));
+        
+            if (routechanged==1){
+                int routeId = Integer.parseInt(request.queryParams("route"));
+                int stopIndex = Integer.parseInt(request.queryParams("stopindex"));
+                engine.changeBus(busId, speed, capacity, routeId, stopIndex);
+            }
+            else{
+                engine.changeBus(busId, speed, capacity);
+            }
+
+            return "{\"success\":\"true\"}";
+        });
+
+        // Process a system constant update web request and returns the new system efficiency
         post("/ksave", (request, response) ->{
 
             String strData  = request.body() ;
@@ -68,55 +129,10 @@ public class SimulationService {
                 setKValue(engine,key,value);
             }
             double efficiency = engine.calcSystemEfficiency() ;
-            //return String.format("{efficiency:%s}", efficiency ) ;
             return String.format("%.1f", efficiency ) ;
         } );
 
-        get("/", (request, response) -> {
-            return createJsonSystemState();
-        });
-
-        get("/movebus", (request, response) -> {
-            return createJsonMoveBus();
-        });
-
-        get("/rewind/:count", (request, response) -> {
-            return createJsonRewind(Integer.parseInt(request.params(":count")));
-        });
-
-        get("/getbus/:busid", (request, response) -> {
-            int busId = Integer.parseInt(request.params(":busid"));
-            Bus bus = engine.getBus(busId); 
-            return createJsonBusModalViewModel(bus);
-            //return createJsonBusModal(bus);
-        });
-
-        get("/reset", (request, response) -> {
-            engine.init();
-            return createJsonSystemState();
-        });
-
-        post("/changebus", (request, response) -> {
-
-            int busId = Integer.parseInt(request.queryParams("busid"));
-            int speed = Integer.parseInt(request.queryParams("speed"));
-            int capacity = Integer.parseInt(request.queryParams("capacity"));
-            int routechanged = Integer.parseInt(request.queryParams("routechanged"));
-        
-            Bus bus = null;
-
-            if (routechanged==1){
-                int routeId = Integer.parseInt(request.queryParams("route"));
-                int stopIndex = Integer.parseInt(request.queryParams("stopindex"));
-                bus = engine.changeBus(busId, speed, capacity, routeId, stopIndex);
-            }
-            else{
-                bus = engine.changeBus(busId, speed, capacity);
-            }
-
-            return createJsonBus(bus);
-        });
-
+        // Process the upload of files from the UI
         post("/upload", (request, response) -> {
 
             request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
@@ -146,20 +162,26 @@ public class SimulationService {
 
             try{
                 engine.initFromData(setupData, riderData);
-                return "Data loaded. Click <a href='./view.html'>here</a> to view engine";
+                return String.format("{\"success\":\"true\",\"systemstate\":%s}",createJsonSystemState());
             }
             catch(Exception ex){
                 return "Failed to initialize";
             }
         });
 
+        // A utility handler to shut down the simulation service (Java web server)
+        post("/stop", (request, response) -> {
+            stopServer();
+            return "{\"success\":\"true\"";
+        });
     }
 
 
     // JSON Returning methods below
 
     // We can always return entire system state for every operation and have the UI redraw everything
-    // But it is much better to just send what is really updated for actions like Move Bus etc where onyl a bus and stop need to be redrawn in UI
+    /* But it is much better to just send what is really updated for actions like Move Bus etc.
+       where only a bus and stop need to be redrawn in UI */
 
 
     private static String createJsonBus(Bus bus){
@@ -167,23 +189,6 @@ public class SimulationService {
             "{\"id\":%d, \"current_stop_id\":%d, \"arrival_time\":%d, \"status\": \"%s\", \"rider_count\":%d,\"route\":%d, \"capacity\":%d, \"speed\":%d}",
             bus.getBusId(), bus.getCurrentStop().getStopId(), bus.getArrivaltime(), bus.toString(), bus.getRiderCount(), 
             bus.getRoute().getRouteId(),bus.getCapacity(),bus.getSpeed());
-    }
-
-    public static String createJsonBusModalViewModel(Bus bus){
-        
-        SimulationEngine engine = SimulationEngine.getInstance();
-
-        String json = String.format("{\"id\":%d, \"capacity\":%d, \"speed\":%d, \"current_stop_id\":%d,\"nextstopindex\":%d,  \"routeid\":%d, \"routes\":[",
-                    bus.getBusId(), bus.getCapacity(), bus.getSpeed(), bus.getCurrentStop().getStopId(), bus.getNextStopIndex(), bus.getRoute().getRouteId());
-                            
-        String csv = "";
-
-        for (BusRoute route : engine.getRoutes()) {
-            csv = csv + String.format("%s,", createJsonRoute(route));
-        }
-        csv = csv.replaceAll(",$", ""); // Remove trailing comma
-
-        return json + csv + "]}";
     }
 
     private static String createJsonStop(Stop stop){
@@ -274,6 +279,7 @@ public class SimulationService {
         }   
         return result + "]}";
     }
+
     public static Map<String, String> getQueryMap(String query)
     {
         String[] params = query.split("&");
@@ -309,4 +315,18 @@ public class SimulationService {
         }
     }
 
+    public static void stopServer() {
+        try {
+            Spark.stop();
+            while (true) {
+                try {
+                    Spark.port();
+                    Thread.sleep(500);
+                } catch (final IllegalStateException ignored) {
+                    break;
+                }
+            }
+        } catch (final Exception ex) {
+        }
+    }
 }

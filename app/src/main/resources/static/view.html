@@ -20,10 +20,11 @@
     <div id="panel-left">
 
         <table id="main-table">
-
+            <!-- Placeholder for the stops and buses -->
         </table>
+
+        <!-- This is the modal popup for system constant updates -->
         <div id="update-sys" class="modal">
-            <!-- Modal content -->
             <div class="modal-content">
                 <div class="modal-header">
                     <span class="close">&times;</span>
@@ -58,12 +59,11 @@
                     </div>
                     <div id="msg-sys-change" class="msg-success"></div>
                 </div>
-                <!-- <div class="modal-footer"> -->
             </div>
         </div>
 
+        <!-- This is the modal popup for bus changes -->
         <div id="update-bus" class="modal">
-            <!-- Modal content -->
             <div class="modal-content">
                 <div class="modal-header">
                     <span class="close" id="close-bus">&times;</span>
@@ -107,7 +107,35 @@
                 </div>
             </div>
         </div>
+
+        <div id="upload-files" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" id="close-files">&times;</span>
+                    <h3>Initialize system from files</h3>
+                </div>
+                <div class="modal-body">
+                    <table>
+                        <tr>
+                            <td>Select Setup File</td>
+                            <td><input id="setupfileupload" name="setupfile" type="file" /></td>
+                        </tr>
+                        <tr>
+                            <td>Select Rider File</td>
+                            <td><input id="riderfileupload" name="riderfile" type="file" /></td>
+                        </tr>
+                    </table>
+                    <div class="modal-button-row">
+                        <button id="btn-upload">Initialize</button>
+                    </div>
+                    <div id="msg-file-upload" class="msg-fail"></div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- The right side control panel -->
     <div id="panel-right">
         <div id="panel-right-efficiency">
             <div>System Efficiency - <span id="efficiency"></span></div>
@@ -134,12 +162,13 @@
             <div><button id="btn-move-bus">Move Bus</button></div>
             <div><button id="btn-rewind">Rewind</button><span id="rewinds-possible"></span></div>
             <div><button id="btn-reset">Reset System</button></div>
-            <div><button id="btn-upload">Initialize system from files</button></div>
+            <div><button id="btn-initialize">Initialize system from files</button></div>
         </div>
 
     </div>
     <script src="scripts/update-sys.js"></script>
     <script src="scripts/update-bus.js"></script>
+    <script src="scripts/init-from-files.js"></script>
     <script src="scripts/main.js"></script>
 </body>
 

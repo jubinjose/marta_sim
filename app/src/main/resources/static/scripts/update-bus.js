@@ -22,7 +22,7 @@ function load_bus_details(bus_id) {
         load_stops();
 
         $("#msg-bus-change").hide();
-        bus_modal.style.display = "block";
+        modal_bus.show();
     }
 }
 
@@ -37,17 +37,36 @@ function load_stops(){
     }
 }
 
-
-
 // Get the modal
-var bus_modal = document.getElementById('update-bus');
+let modal_bus = $('#update-bus');
 
-// Get the button that opens the modal
-var bus_btn = document.getElementById("btn-update-bus");
+// When the user clicks on the button, open the modal 
+$('#btn-update-bus').click(function () {
+    load_bus_details($("#selectBus").val());
+    $("#allroutesrow").toggle(false);
+    $("#routestoprow").toggle(false);
+});
 
-// Get the <span> element that closes the modal
-var bus_span = document.getElementById("close-bus");
-//var span = document.getElementsByClassName("close-bus")[0];
+function close_bus_modal(){
+    $('#changeroute').prop('checked', false); 
+    modal_bus.hide();
+}
+
+// When the user clicks on <span> (x), close the modal
+modal_bus.find('.close').click(function () {
+    close_bus_modal();
+});
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+    if (event.target == modal_bus) {
+        close_bus_modal();
+    }
+}
+
+$("#btn-close-bus").click(function () {    
+    close_bus_modal();
+});
 
 // uncheck by default 
 $('#changeroute').prop('checked', false); 
@@ -55,27 +74,7 @@ $('#changeroute').prop('checked', false);
 var route_stops = {};
 var selectedBusId;
 
-// When the user clicks on the button, open the modal 
-bus_btn.onclick = function () {
-    load_bus_details($("#selectBus").val());
-    $("#allroutesrow").toggle(false);
-    $("#routestoprow").toggle(false);
-}
-
-// When the user clicks on <span> (x), close the modal
-bus_span.onclick = function () {
-    bus_modal.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function (event) {
-    if (event.target == bus_modal) {
-        bus_modal.style.display = "none";
-    }
-}
-
-
-bus_modal.style.display = "none";
+modal_bus.hide();
 
 $("#btn-update").click(function () {
 
@@ -135,12 +134,7 @@ $("#btn-update").click(function () {
         });
 });
 
-$("#btn-close-bus").click(function () {    
-    // uncheck it  
-    $('#changeroute').prop('checked', false); 
-    var bus_modal = document.getElementById('update-bus');
-    bus_modal.style.display = "none";
-});
+
 
 $('#changeroute').click(function () {
     $("#allroutesrow").toggle(this.checked);

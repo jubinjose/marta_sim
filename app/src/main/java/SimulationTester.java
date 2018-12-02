@@ -1,6 +1,10 @@
 import java.io.*;
 import java.util.*;
 
+// This class exists solely to bulk test the simulation engine against a folder with many input files
+// It generates output files corresponding to each input file for 20 simulation steps
+// This allows a folder diff against a known solutions folder for exact match
+// Note that a rider file still needs to be provided as argument though the test is only to validate thge move bus logic
 public class SimulationTester {
 	public static void main(String[] args) {
 
@@ -108,8 +112,6 @@ public class SimulationTester {
                     }
                 }
             }
-
-          
         }
     }
 }

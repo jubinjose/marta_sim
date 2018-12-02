@@ -1,3 +1,4 @@
+// Used to store info that will be needed to rewind system after a move bus
 public class SystemState{
 
     private Bus bus;

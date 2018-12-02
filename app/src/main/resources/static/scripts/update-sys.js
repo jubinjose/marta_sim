@@ -1,15 +1,23 @@
+function isNumber(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function validateNumber(num){
+    if ( !isNumber(num) )
+    {
+         return {"error":"Please enter a numeric value for "};
+    }
+    else{
+        return {};
+    }
+}
+
 // Get the modal
-var modal = document.getElementById('update-sys');
-
-// Get the button that opens the modal
-var btn = document.getElementById("btn-update-sys");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
+let modal_sys = $('#update-sys');
 
 // When the user clicks on the button, open the modal 
-btn.onclick = function() {
-    modal.style.display = "block";
+$("#btn-update-sys").click(function() {
+    modal_sys.show();
     
     $("#kSysspeed").val(engine.kspeed);
     $("#kSyscapacity").val(engine.kcapacity);
@@ -18,35 +26,21 @@ btn.onclick = function() {
     $("#kSyscombined").val(engine.kcombined);
 
     $("#msg-sys-change").hide();
-}
+});
 
 // When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
-}
+modal_sys.find('.close').click(function() {
+    modal_sys.hide();
+});
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
+    if (event.target == modal_sys) {
+        modal_sys.hide();
     }
 }
 
-modal.style.display = "none";
-
-function isNumber(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
-function validateNumber(num){
-       if ( !isNumber(num) )
-       {
-            return {"error":"Please enter a numeric value for "};
-       }
-       else{
-           return {};
-       }
-}
+modal_sys.hide();
 
 $("#btn-save").click(function() {
 
@@ -129,6 +123,5 @@ $("#btn-save").click(function() {
 });
 
 $("#btn-close").click(function() {
-       var modal = document.getElementById('update-sys');
-       modal.style.display = "none";
+       modal_sys.hide();
 });
