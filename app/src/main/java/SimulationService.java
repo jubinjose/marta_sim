@@ -118,17 +118,13 @@ public class SimulationService {
         // Process a system constant update web request and returns the new system efficiency
         post("/ksave", (request, response) ->{
 
-            String strData  = request.body() ;
-            Map<String, String> map = getQueryMap(request.body());
-            Set<String> keys = map.keySet();
-            String strValue  ="" ;
-            for (String key : keys)
-            {
-                strValue = map.get(key) ;
-                double value = Double.parseDouble(strValue );
-                setKValue(engine,key,value);
-            }
-            double efficiency = engine.calcSystemEfficiency() ;
+            engine.setSysSpeed(Double.parseDouble(request.queryParams("kspeed")));
+            engine.setSysCapacity(Double.parseDouble(request.queryParams("kcapacity")));
+            engine.setSysWaiting(Double.parseDouble(request.queryParams("kwaiting")));
+            engine.setSysBuses(Double.parseDouble(request.queryParams("kbuses")));
+            engine.setSysCombined(Double.parseDouble(request.queryParams("kcombined")));
+
+            double efficiency = engine.calcSystemEfficiency();
             return String.format("%.1f", efficiency ) ;
         } );
 
@@ -280,41 +276,7 @@ public class SimulationService {
         return result + "]}";
     }
 
-    public static Map<String, String> getQueryMap(String query)
-    {
-        String[] params = query.split("&");
-        Map<String, String> map = new HashMap<String, String>();
-        for (String param : params)
-        {
-            String name = param.split("=")[0];
-            String value = param.split("=")[1];
-            map.put(name, value);
-        }
-        return map;
-    }
-
-    public static void setKValue(SimulationEngine engine,String key, double value) {
-        switch (key) {
-            case "kspeed":
-                engine.setSysSpeed(value);
-                break;
-            case "kcapacity":
-                engine.setCapacity(value);
-                break;
-            case "kwaiting":
-                engine.setSysWaiting(value);
-                break;
-            case "kbuses":
-                engine.setSysBuses(value);
-                break;
-            case "kcombined":
-                engine.setSysCombined(value);
-                break;
-            default:
-                break;
-        }
-    }
-
+    // Utility method to stop the http web server
     public static void stopServer() {
         try {
             Spark.stop();

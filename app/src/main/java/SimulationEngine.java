@@ -45,7 +45,7 @@ public class SimulationEngine{
     public double getSysCapacity(){
         return sysCapacity;
     }
-    public void setCapacity(double val){
+    public void setSysCapacity(double val){
         sysCapacity = val;
     }
 
