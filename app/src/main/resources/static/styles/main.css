@@ -40,7 +40,7 @@ hr {
     border-top: 2px solid black;
 }
 
-#bus-buttons button { 
+#action-buttons button { 
     margin-bottom: 15px;
 }
 
@@ -50,6 +50,7 @@ hr {
     background-color: lightblue;
     float:right;
     padding-left: 5px;
+    display: none;
 }
 
 #panel-right-system {
@@ -66,4 +67,12 @@ hr {
 
 #rewinds-possible{
     padding-left:5px;
+}
+
+#btn-update-bus{
+    margin-top:10px;
+}
+
+#btn-update-sys{
+    margin-top:10px;
 }

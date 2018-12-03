@@ -25,6 +25,11 @@
         modal_files.hide();
       }
   }
+
+  $("#btn-close-upload").click(function() {
+    modal_files.hide();
+  });
+
   
   modal_files.hide();
 
@@ -59,7 +64,7 @@ $('#btn-upload').on('click', function () {
     })
     .done(function (data) {
       if (data.success == 'true') {
-        $('#upload-file').hide();
+        modal_files.hide();
         load_initial_data(data.systemstate);
         draw_initial_ui();
       } else {

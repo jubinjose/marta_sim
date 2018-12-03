@@ -54,8 +54,8 @@
                         </tr>
                     </table>
                     <div class="modal-button-row">
-                        <button id="btn-save" style="margin-bottom:15px">Update</button>
-                        <button id="btn-close" style="margin-bottom:15px">Close</button>
+                        <button id="btn-save-sys" style="margin-bottom:15px">Update</button>
+                        <button id="btn-close-sys" style="margin-bottom:15px">Close</button>
                     </div>
                     <div id="msg-sys-change" class="msg-success"></div>
                 </div>
@@ -122,12 +122,13 @@
                             <td><input id="setupfileupload" name="setupfile" type="file" /></td>
                         </tr>
                         <tr>
-                            <td>Select Rider File</td>
+                            <td>Select passenger probability File</td>
                             <td><input id="riderfileupload" name="riderfile" type="file" /></td>
                         </tr>
                     </table>
                     <div class="modal-button-row">
                         <button id="btn-upload">Initialize</button>
+                        <button id="btn-close-upload">Close</button>
                     </div>
                     <div id="msg-file-upload" class="msg-fail"></div>
                 </div>
@@ -139,31 +140,37 @@
     <div id="panel-right">
         <div id="panel-right-efficiency">
             <div>System Efficiency - <span id="efficiency"></span></div>
+            <hr />
         </div>
-        <hr />
+        
         <div id="panel-right-system">
             <div>kSpeed - <span id="kspeed"></span></div>
             <div>kCapacity - <span id="kcapacity"></span></div>
             <div>kWaiting - <span id="kwaiting"></span></div>
             <div>kBuses - <span id="kbuses"></span></div>
             <div>kCombined - <span id="kcombined"></span></div>
+            <div>
+                <button id="btn-update-sys">Update System Parameters </button>
+                <hr />
+            </div>
         </div>
-        <button id="btn-update-sys">Update System Parameters </button>
-        <hr />
-        <div id="panel-right-system">
+        <div id="panel-right-bus">
             <span>Select Bus ID: </span>
             <select id="selectBus">
                 <option></option>
             </select>
+            <div>
+                <button id="btn-update-bus">Update Selected Bus</button>
+                <hr />
+            </div>
         </div>
-        <button id="btn-update-bus">Update Selected Bus</button>
-        <hr />
-        <div id="bus-buttons">
+
+        <div id="action-buttons">
             <div><button id="btn-move-bus">Move Bus</button></div>
             <div><button id="btn-rewind">Rewind</button><span id="rewinds-possible"></span></div>
             <div><button id="btn-reset">Reset System</button></div>
-            <div><button id="btn-initialize">Initialize system from files</button></div>
         </div>
+        <div style="margin-bottom:15px"><button id="btn-initialize">Initialize system from files</button></div>
 
     </div>
     <script src="scripts/update-sys.js"></script>

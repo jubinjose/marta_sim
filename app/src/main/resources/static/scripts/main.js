@@ -103,6 +103,24 @@ function draw_initial_ui(){
         add_buses_to_stop(stop.id, stop.buslist)
     
     }
+
+    if (engine.stoplist.length == 0){
+        // Assume that system is not initialized - hide all controls that don't apply
+        $('#panel-right-efficiency').hide();
+        $('#panel-right-system').hide();
+        $('#panel-right-bus').hide();
+        $('#action-buttons').hide();
+        modal_files.show();
+    }
+    else{
+        modal_files.hide();
+        $('#panel-right-efficiency').show();
+        $('#panel-right-system').show();
+        $('#panel-right-bus').show();
+        $('#action-buttons').show();
+    }
+
+    $('#panel-right').show();
 }
 
 function add_buses_to_stop(stop_id, buslist){ 
@@ -255,11 +273,6 @@ $( document ).ready(function() {
                 draw_initial_ui();
             }, "json");
         });
-
-        // // Hookup upload files event handler
-        // $("#btn-initialize").click(function() {
-        //     window.location.replace("./upload.html");
-        // });
     }, "json" );
 });
 

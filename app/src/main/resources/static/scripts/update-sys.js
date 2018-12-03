@@ -40,9 +40,13 @@ window.onclick = function(event) {
     }
 }
 
+$("#btn-close-sys").click(function() {
+    modal_sys.hide();
+});
+
 modal_sys.hide();
 
-$("#btn-save").click(function() {
+$("#btn-save-sys").click(function() {
 
     let errors = [];
 
@@ -122,6 +126,3 @@ $("#btn-save").click(function() {
     $("#msg-sys-change").show();
 });
 
-$("#btn-close").click(function() {
-       modal_sys.hide();
-});
