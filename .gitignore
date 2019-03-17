@@ -32,3 +32,5 @@ target/
 
 # Mac OS specific
 .DS_Store
+
+output/
