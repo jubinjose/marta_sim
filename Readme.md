@@ -4,7 +4,7 @@
 
 Java version 1.8+
 
-Browser that supports HTML5 & ES6 JavaScript
+Browser with support for HTML5 & ES6 JavaScript
 
 ## Application External Dependencies
 
@@ -16,9 +16,9 @@ Simple Logging Facade for Java - https://www.slf4j.org/
 
 ## Description of folders within repo
 
-app – This is the actual project folder structured as a maven ready folder.
+app – Maven project for the Java backend
 
-app/src – All source code (java and html/js/css) for the project
+app/src – All source code (java and UI) for the project
 
 test – All provided test files
 
@@ -32,7 +32,7 @@ This is a two-step process – Launch the Java app and then access UI on browser
 
 To start the Java application, open a terminal and change directory
 
-    cd ~/git/cs6310/app/
+    cd ./app/
 
 Issue following command for Mac/Unix
 
@@ -65,7 +65,7 @@ Compiled classes & everything required to run app will be created in app/target
 
 Open a terminal and change directory
 
-    cd ~git/cs6310/app
+    cd ./app
     
 Build using Maven -> Execute following command
 
@@ -73,7 +73,7 @@ Build using Maven -> Execute following command
 
 Build using Java → Execute the following four commands
  
-    rm -f -r cs6310/app/target
+    rm -f -r ./app/target
 
     mkdir -p target/classes
 
@@ -93,7 +93,7 @@ SimulationEngine is a singleton so that every web request coming in can get a ho
 
 The UI is truly stateless. It is just a window into the actual application engine. This de coupling of UI from application engine using a well-known protocol (http + json) allows multiple UIs to connect to the SimulationService and view or manipulate the system.
 
-The UI has clean ES6 JavaScript class-based code w/o relying on any complex framework etc.
+The UI has clean ES6 JavaScript class-based code. No angular/react/vue or simialr as it will be overkill.
 
 On a rewind, we restore all the state related to the bus including any capacity, passenger and route changes that may have happened.
 
@@ -124,7 +124,7 @@ The results will be created in a folder named “output” in the folder passed 
 
 This output folder can be folder diff-ed with the provided solutions folder ( ~/git/cs6310/test/20 Step Solutions ) to validate output correctness
 
-    cd ~/git/cs6310/app
+    cd ./app
 
     java -cp ./target/classes:./target/classes/lib/* SimulationTester ../test  ../test/probabilities/test_evening_distibution.csv
 
